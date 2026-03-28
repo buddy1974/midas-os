@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Read(//c/Users/loneb/.claude/projects/C--Users-loneb-Documents-ai-software-dev-projects-midas-os/**)",
+      "Bash(mkdir -p /c/Users/loneb/.claude/projects/C--Users-loneb-Documents-ai-software-dev-projects-midas-os/memory/)",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/lots/[id])",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/contacts/[id])",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
