@@ -5,6 +5,13 @@ import { users, lots, contacts, activityLog } from "@/lib/schema";
 import type { NewUser, NewLot, NewContact, NewActivityLog } from "@/lib/schema";
 
 export async function POST() {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json(
+      { error: "Seed route disabled in production" },
+      { status: 403 }
+    );
+  }
+
   if (process.env.NODE_ENV !== "development") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
