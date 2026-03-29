@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+const TEAM = [
+  { name: "Sam Fongho",     role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Team Member 2",  role: "Member", email: "member2@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
+  { name: "Team Member 3",  role: "Member", email: "member3@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
+];
+
 export default function LoginPage() {
   const router = useRouter();
+  const submitRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -119,6 +126,7 @@ export default function LoginPage() {
             )}
 
             <button
+              ref={submitRef}
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded text-sm font-semibold tracking-widest uppercase transition-opacity disabled:opacity-50"
@@ -130,6 +138,55 @@ export default function LoginPage() {
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
+
+          {/* Quick login */}
+          <div className="mt-6">
+            <div
+              className="flex items-center gap-3 mb-4"
+              style={{ color: "rgba(232,228,220,0.25)" }}
+            >
+              <span className="flex-1 h-px" style={{ backgroundColor: "rgba(201,168,76,0.12)" }} />
+              <span className="text-xs tracking-widest uppercase whitespace-nowrap">Quick access</span>
+              <span className="flex-1 h-px" style={{ backgroundColor: "rgba(201,168,76,0.12)" }} />
+            </div>
+            <div className="flex flex-col gap-2">
+              {TEAM.map((member) => (
+                <button
+                  key={member.email}
+                  type="button"
+                  onClick={() => {
+                    setEmail(member.email);
+                    setPassword(member.password);
+                    submitRef.current?.focus();
+                  }}
+                  className="flex items-center justify-between w-full px-4 py-2 rounded-full text-sm transition-colors"
+                  style={{
+                    backgroundColor: "#15151C",
+                    border: "1px solid rgba(201,168,76,0.25)",
+                    color: "#E8E4DC",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C9A84C";
+                    (e.currentTarget as HTMLButtonElement).style.color = "#080809";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "#C9A84C";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#15151C";
+                    (e.currentTarget as HTMLButtonElement).style.color = "#E8E4DC";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,76,0.25)";
+                  }}
+                >
+                  <span className="font-medium">{member.name}</span>
+                  <span
+                    className="text-xs font-semibold tracking-widest uppercase"
+                    style={{ color: "inherit", opacity: 0.65 }}
+                  >
+                    {member.role}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <p
             className="mt-6 text-center text-xs"
