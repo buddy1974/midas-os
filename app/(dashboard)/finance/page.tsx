@@ -21,18 +21,22 @@ export default function FinancePage() {
   return (
     <div className="space-y-5">
       {/* Tab navigation */}
-      <div className="flex flex-wrap gap-2">
+      <div
+        className="flex gap-2 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+      >
         {TABS.map((tab) => {
           const isActive = active === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0"
               style={{
                 backgroundColor: isActive ? "var(--color-gold)" : "var(--color-surface)",
                 color: isActive ? "#080809" : "var(--color-text-dim)",
                 border: isActive ? "none" : "1px solid var(--color-border)",
+                minHeight: "44px",
               }}
             >
               {tab.label}

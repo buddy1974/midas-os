@@ -133,6 +133,7 @@ export default function PipelineBoard() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [activeCol, setActiveCol] = useState(0);
 
   async function fetchLots() {
     try {
@@ -192,8 +193,102 @@ export default function PipelineBoard() {
         </div>
       )}
 
-      {/* Kanban grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* ── Mobile: single-column carousel (< md) ── */}
+      <div className="md:hidden">
+        {/* Column selector tabs */}
+        <div
+          className="flex gap-2 overflow-x-auto pb-3 mb-3"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+        >
+          {COLUMNS.map((col, i) => (
+            <button
+              key={col.stage}
+              onClick={() => setActiveCol(i)}
+              className="shrink-0 px-3 py-2 rounded text-xs font-medium transition-colors"
+              style={{
+                backgroundColor: activeCol === i ? `${col.accentColor}20` : "var(--color-surface)",
+                border: `1px solid ${activeCol === i ? col.accentColor : "var(--color-border)"}`,
+                color: activeCol === i ? col.accentColor : "var(--color-text-dim)",
+                minHeight: "44px",
+              }}
+            >
+              {col.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Active column */}
+        {COLUMNS.map((col, i) => {
+          if (i !== activeCol) return null;
+          const colLots = lotsByStage(col.stage);
+          return (
+            <div
+              key={col.stage}
+              className="rounded-lg flex flex-col"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                minHeight: "360px",
+              }}
+            >
+              <div
+                className="flex items-center justify-between px-4 py-3 rounded-t-lg"
+                style={{
+                  borderBottom: "1px solid var(--color-border)",
+                  borderLeft: `3px solid ${col.accentColor}`,
+                }}
+              >
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                  {col.label}
+                </span>
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{ backgroundColor: `${col.accentColor}20`, color: col.accentColor }}
+                >
+                  {loading ? "—" : colLots.length}
+                </span>
+              </div>
+              <div className="flex-1 p-3 space-y-3 overflow-y-auto">
+                {loading ? (
+                  <><SkeletonCard /><SkeletonCard /></>
+                ) : colLots.length === 0 ? (
+                  <p className="text-xs text-center pt-8" style={{ color: "var(--color-text-dim)" }}>
+                    No lots
+                  </p>
+                ) : (
+                  colLots.map((lot) => (
+                    <LotCard
+                      key={lot.id}
+                      lot={lot}
+                      onStageChange={handleStageChange}
+                      updating={updatingId === lot.id}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-2 mt-4">
+          {COLUMNS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveCol(i)}
+              className="rounded-full transition-colors"
+              style={{
+                width: "8px",
+                height: "8px",
+                backgroundColor: i === activeCol ? "var(--color-gold)" : "rgba(201,168,76,0.2)",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Desktop: kanban grid (md+) ── */}
+      <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-4 gap-4">
         {COLUMNS.map((col) => {
           const colLots = lotsByStage(col.stage);
           return (

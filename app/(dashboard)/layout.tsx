@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
-import Topbar from "@/components/Topbar";
+import ShellClient from "@/components/ShellClient";
 
 export default async function DashboardLayout({
   children,
@@ -17,15 +16,5 @@ export default async function DashboardLayout({
     role: (session.user as { role?: string }).role ?? "member",
   };
 
-  return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-      <Sidebar user={user} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto p-6" style={{ backgroundColor: "#080809" }}>
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+  return <ShellClient user={user}>{children}</ShellClient>;
 }

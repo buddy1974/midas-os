@@ -183,7 +183,7 @@ export default function OraclePage() {
   }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 max-w-full">
       {/* Left — Input Form */}
       <div className="space-y-5">
         <div
@@ -203,11 +203,13 @@ export default function OraclePage() {
                 backgroundColor: "var(--color-surface-2)",
                 border: "1px solid var(--color-border)",
                 color: "var(--color-text)",
+                fontSize: "16px",
+                minHeight: "44px",
               }}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs uppercase tracking-wider mb-1" style={{ color: "var(--color-text-dim)" }}>Property Type</label>
               <select
@@ -218,6 +220,8 @@ export default function OraclePage() {
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
+                  fontSize: "16px",
+                  minHeight: "44px",
                 }}
               >
                 {PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}
@@ -236,13 +240,15 @@ export default function OraclePage() {
                     backgroundColor: "var(--color-surface-2)",
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
+                    fontSize: "16px",
+                    minHeight: "44px",
                   }}
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs uppercase tracking-wider mb-1" style={{ color: "var(--color-text-dim)" }}>Bedrooms</label>
               <select
@@ -253,6 +259,8 @@ export default function OraclePage() {
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
+                  fontSize: "16px",
+                  minHeight: "44px",
                 }}
               >
                 {BEDROOMS.map((b) => <option key={b}>{b}</option>)}
@@ -268,6 +276,8 @@ export default function OraclePage() {
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
+                  fontSize: "16px",
+                  minHeight: "44px",
                 }}
               >
                 {CONDITIONS.map((c) => <option key={c}>{c}</option>)}
@@ -298,7 +308,7 @@ export default function OraclePage() {
           style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
         >
           <p className="text-xs uppercase tracking-widest" style={{ color: "var(--color-text-dim)" }}>Quick BMV Calculator</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs uppercase tracking-wider mb-1" style={{ color: "var(--color-text-dim)" }}>Guide Price (£)</label>
               <input
@@ -310,6 +320,8 @@ export default function OraclePage() {
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
+                  fontSize: "16px",
+                  minHeight: "44px",
                 }}
               />
             </div>
@@ -324,6 +336,8 @@ export default function OraclePage() {
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
+                  fontSize: "16px",
+                  minHeight: "44px",
                 }}
               />
             </div>
@@ -433,7 +447,7 @@ export default function OraclePage() {
             </div>
 
             {/* ROI + Yield */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { label: "ROI Estimate", value: result.roiEstimate },
                 { label: "Gross Yield", value: result.grossYieldEstimate },
