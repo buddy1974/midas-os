@@ -1,24 +1,27 @@
-import { auth } from "@/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isAuthRoute = req.nextUrl.pathname.startsWith("/login");
-  const isApiAuth = req.nextUrl.pathname.startsWith("/api/auth");
-  const isApiRoute = req.nextUrl.pathname.startsWith("/api");
+export function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-  if (isApiAuth) return NextResponse.next();
-  if (isApiRoute && !isLoggedIn) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const isPublic =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon");
+
+  if (isPublic) return NextResponse.next();
+
+  const sessionToken =
+    req.cookies.get("__Secure-next-auth.session-token")?.value ||
+    req.cookies.get("next-auth.session-token")?.value;
+
+  if (!sessionToken) {
+    const loginUrl = new URL("/login", req.url);
+    return NextResponse.redirect(loginUrl);
   }
-  if (!isLoggedIn && !isAuthRoute) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-  if (isLoggedIn && isAuthRoute) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
