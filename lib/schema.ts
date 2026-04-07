@@ -86,3 +86,54 @@ export type NewActivityLog = InferInsertModel<typeof activityLog>;
 
 export type Campaign = InferSelectModel<typeof campaigns>;
 export type NewCampaign = InferInsertModel<typeof campaigns>;
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email", { length: 200 }).unique().notNull(),
+  name: varchar("name", { length: 100 }),
+  status: varchar("status", { length: 20 }).default("confirmed").notNull(),
+  token: varchar("token", { length: 64 }).notNull(),
+  source: varchar("source", { length: 100 }),
+  investorType: varchar("investor_type", { length: 50 }),
+  budgetMin: integer("budget_min"),
+  budgetMax: integer("budget_max"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+  confirmedAt: timestamp("confirmed_at"),
+});
+
+export const newsletterSends = pgTable("newsletter_sends", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  templateType: varchar("template_type", { length: 50 }),
+  segment: varchar("segment", { length: 100 }),
+  recipientCount: integer("recipient_count").default(0),
+  openRate: numeric("open_rate").default("0"),
+  clickRate: numeric("click_rate").default("0"),
+  resendMessageId: varchar("resend_message_id", { length: 255 }),
+  status: varchar("status", { length: 20 }).default("sent"),
+  sentAt: timestamp("sent_at").default(sql`now()`),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export const newsletterDrafts = pgTable("newsletter_drafts", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  subject: varchar("subject", { length: 255 }),
+  previewText: varchar("preview_text", { length: 300 }),
+  templateType: varchar("template_type", { length: 50 }),
+  lotIds: text("lot_ids"),
+  htmlBody: text("html_body"),
+  status: varchar("status", { length: 20 }).default("draft"),
+  recipientCount: integer("recipient_count").default(0),
+  scheduledAt: timestamp("scheduled_at"),
+  sentAt: timestamp("sent_at"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type NewsletterSubscriber = InferSelectModel<typeof newsletterSubscribers>;
+export type NewNewsletterSubscriber = InferInsertModel<typeof newsletterSubscribers>;
+
+export type NewsletterSend = InferSelectModel<typeof newsletterSends>;
+export type NewNewsletterSend = InferInsertModel<typeof newsletterSends>;
+
+export type NewsletterDraft = InferSelectModel<typeof newsletterDrafts>;
+export type NewNewsletterDraft = InferInsertModel<typeof newsletterDrafts>;

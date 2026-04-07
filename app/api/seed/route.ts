@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -139,11 +139,79 @@ export async function POST() {
     },
   ];
 
+  const seedSubscribers: NewNewsletterSubscriber[] = [
+    {
+      email: "james.wilson@property.co.uk",
+      name: "James Wilson",
+      status: "confirmed",
+      investorType: "hmo",
+      source: "manual",
+      token: "tok_james_wilson_001",
+    },
+    {
+      email: "priya.sharma@invest.com",
+      name: "Priya Sharma",
+      status: "confirmed",
+      investorType: "btl",
+      source: "website",
+      token: "tok_priya_sharma_002",
+    },
+    {
+      email: "marcus.obi@gmail.com",
+      name: "Marcus Obi",
+      status: "confirmed",
+      investorType: "hmo",
+      source: "event",
+      token: "tok_marcus_obi_003",
+    },
+    {
+      email: "angela.chen@portfolio.uk",
+      name: "Angela Chen",
+      status: "confirmed",
+      investorType: "commercial",
+      source: "manual",
+      token: "tok_angela_chen_004",
+    },
+    {
+      email: "derek.brown@london.com",
+      name: "Derek Brown",
+      status: "confirmed",
+      investorType: "btl",
+      source: "mailchimp_import",
+      token: "tok_derek_brown_005",
+    },
+    {
+      email: "sara.ahmed@invest.uk",
+      name: "Sara Ahmed",
+      status: "confirmed",
+      investorType: "land",
+      source: "website",
+      token: "tok_sara_ahmed_006",
+    },
+    {
+      email: "tom.forde@capital.com",
+      name: "Tom Forde",
+      status: "unsubscribed",
+      investorType: "general",
+      source: "website",
+      token: "tok_tom_forde_007",
+    },
+    {
+      email: "yemi.adeyemi@btlinvest.co.uk",
+      name: "Yemi Adeyemi",
+      status: "confirmed",
+      investorType: "hmo",
+      source: "event",
+      token: "tok_yemi_adeyemi_008",
+    },
+  ];
+
   const db = getDb();
   await db.insert(users).values(seedUsers).onConflictDoNothing();
   await db.insert(lots).values(seedLots);
   await db.insert(contacts).values(seedContacts);
   await db.insert(activityLog).values(seedActivity);
+  await db.insert(newsletterSubscribers).values(seedSubscribers).onConflictDoNothing();
 
   return NextResponse.json({ success: true, message: "Seeded" });
 }
