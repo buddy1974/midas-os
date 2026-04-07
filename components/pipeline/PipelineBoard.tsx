@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import type { Lot } from "@/lib/schema";
 import AddLotModal from "./AddLotModal";
@@ -65,6 +66,7 @@ interface LotCardProps {
 }
 
 function LotCard({ lot, onStageChange, updating }: LotCardProps) {
+  const router = useRouter();
   return (
     <div
       className="rounded-md p-3 space-y-2"
@@ -123,6 +125,18 @@ function LotCard({ lot, onStageChange, updating }: LotCardProps) {
           </option>
         ))}
       </select>
+
+      <button
+        onClick={() => router.push(`/social?lotId=${lot.id}`)}
+        className="w-full rounded px-2 py-1.5 text-xs font-medium text-left transition-colors"
+        style={{
+          backgroundColor: "rgba(201,168,76,0.06)",
+          border: "1px solid rgba(201,168,76,0.15)",
+          color: "rgba(201,168,76,0.7)",
+        }}
+      >
+        📱 Generate Social Post
+      </button>
     </div>
   );
 }

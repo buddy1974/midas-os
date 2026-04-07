@@ -16,6 +16,7 @@ import {
   Inbox,
   MessageCircle,
   Send,
+  Share2,
   Settings,
   LogOut,
   Menu,
@@ -65,6 +66,7 @@ const navSections: NavSection[] = [
   {
     title: "Communication",
     items: [
+      { label: "Social Content", href: "/social", icon: Share2, badge: "AI" },
       { label: "WhatsApp Hub", href: "/whatsapp", icon: MessageCircle },
       { label: "Newsletter", href: "/newsletter", icon: Send },
     ],

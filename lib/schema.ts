@@ -137,3 +137,19 @@ export type NewNewsletterSend = InferInsertModel<typeof newsletterSends>;
 
 export type NewsletterDraft = InferSelectModel<typeof newsletterDrafts>;
 export type NewNewsletterDraft = InferInsertModel<typeof newsletterDrafts>;
+
+export const socialPosts = pgTable("social_posts", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  lotId: uuid("lot_id"),
+  platform: varchar("platform", { length: 20 }).notNull(),
+  content: text("content").notNull(),
+  hashtags: text("hashtags"),
+  status: varchar("status", { length: 20 }).default("draft").notNull(),
+  tone: varchar("tone", { length: 20 }).default("professional").notNull(),
+  generatedAt: timestamp("generated_at").default(sql`now()`).notNull(),
+  postedAt: timestamp("posted_at"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type SocialPost = InferSelectModel<typeof socialPosts>;
+export type NewSocialPost = InferInsertModel<typeof socialPosts>;
