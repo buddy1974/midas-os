@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings, privateLenders, portfolios, portfolioProperties, chatMessages } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing, NewPrivateLender, NewPortfolio, NewPortfolioProperty, NewChatMessage } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -311,6 +311,107 @@ export async function POST() {
     ];
     await db.insert(viewings).values(seedViewings);
   }
+
+  // Seed private lenders
+  const seedLenders: NewPrivateLender[] = [
+    {
+      name: "James Hartford",
+      email: "james@hartfordcapital.co.uk",
+      phone: "07700 111222",
+      company: "Hartford Capital Ltd",
+      lenderType: "company",
+      maxLoanPence: 50000000,
+      minLoanPence: 5000000,
+      maxLtv: 75,
+      monthlyRate: "0.75",
+      chargeTypes: "1st",
+      specialisms: "auction,bridging,refurb",
+      status: "active",
+      totalDeals: 12,
+    },
+    {
+      name: "Patricia Mensah",
+      email: "patricia@mensahinvest.com",
+      phone: "07700 333444",
+      company: "Mensah Investment Group",
+      lenderType: "family_office",
+      maxLoanPence: 20000000,
+      minLoanPence: 2000000,
+      maxLtv: 70,
+      monthlyRate: "0.85",
+      chargeTypes: "1st and 2nd",
+      specialisms: "hmo,btl,auction",
+      status: "active",
+      totalDeals: 5,
+    },
+  ];
+  await db.insert(privateLenders).values(seedLenders);
+
+  // Seed portfolio
+  const [seedPortfolio] = await db
+    .insert(portfolios)
+    .values({
+      ownerName: "James Wilson",
+      ownerEmail: "james.wilson@property.co.uk",
+      portfolioName: "James Wilson BTL Portfolio",
+      strategy: "btl",
+      notes: "Long-term BTL investor, London focus",
+    } satisfies NewPortfolio)
+    .returning();
+
+  if (seedPortfolio) {
+    const seedProps: NewPortfolioProperty[] = [
+      {
+        portfolioId: seedPortfolio.id,
+        address: "14 Clifton Road, Barking, IG11 7LU",
+        propertyType: "Terraced House",
+        purchasePricePence: 22000000,
+        currentValuePence: 28500000,
+        outstandingMortgagePence: 15000000,
+        monthlyRentPence: 130000,
+        monthlyMortgagePence: 75000,
+        monthlyCostsPence: 20000,
+        bedrooms: 3,
+      },
+      {
+        portfolioId: seedPortfolio.id,
+        address: "7 Manor Road, Dagenham, RM9 5QR",
+        propertyType: "Semi-Detached",
+        purchasePricePence: 18500000,
+        currentValuePence: 23000000,
+        outstandingMortgagePence: 12000000,
+        monthlyRentPence: 110000,
+        monthlyMortgagePence: 62000,
+        monthlyCostsPence: 18000,
+        bedrooms: 3,
+      },
+      {
+        portfolioId: seedPortfolio.id,
+        address: "22 Ripple Road, Barking, IG11 7NF",
+        propertyType: "Flat",
+        purchasePricePence: 14000000,
+        currentValuePence: 17500000,
+        outstandingMortgagePence: 9500000,
+        monthlyRentPence: 95000,
+        monthlyMortgagePence: 52000,
+        monthlyCostsPence: 15000,
+        bedrooms: 2,
+      },
+    ];
+    await db.insert(portfolioProperties).values(seedProps);
+  }
+
+  // Seed chat messages
+  const seedChats: NewChatMessage[] = [
+    { role: "user", content: "What are my active lots?", contextUsed: "lots" },
+    {
+      role: "assistant",
+      content:
+        "You have 14 active lots across your pipeline. Your strongest right now is 5 Weald Lane, Harrow at £895k guide — a 9-room licensed HMO producing £123,600/year.",
+      contextUsed: "lots",
+    },
+  ];
+  await db.insert(chatMessages).values(seedChats);
 
   return NextResponse.json({ success: true, message: "Seeded" });
 }

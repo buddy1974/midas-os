@@ -193,3 +193,112 @@ export type NewEvent = InferInsertModel<typeof events>;
 
 export type EventRegistration = InferSelectModel<typeof eventRegistrations>;
 export type NewEventRegistration = InferInsertModel<typeof eventRegistrations>;
+
+export const viewings = pgTable("viewings", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  lotId: uuid("lot_id").notNull(),
+  contactName: varchar("contact_name", { length: 100 }).notNull(),
+  contactEmail: varchar("contact_email", { length: 255 }).notNull(),
+  contactPhone: varchar("contact_phone", { length: 30 }),
+  viewingDate: timestamp("viewing_date").notNull(),
+  durationMinutes: integer("duration_minutes").default(30).notNull(),
+  status: varchar("status", { length: 20 }).default("scheduled").notNull(),
+  notes: text("notes"),
+  confirmationSent: boolean("confirmation_sent").default(false).notNull(),
+  reminderSent: boolean("reminder_sent").default(false).notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type Viewing = InferSelectModel<typeof viewings>;
+export type NewViewing = InferInsertModel<typeof viewings>;
+
+export const privateLenders = pgTable("private_lenders", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 30 }),
+  company: varchar("company", { length: 150 }),
+  lenderType: varchar("lender_type", { length: 50 }).default("individual"),
+  maxLoanPence: integer("max_loan_pence"),
+  minLoanPence: integer("min_loan_pence"),
+  maxLtv: integer("max_ltv"),
+  monthlyRate: numeric("monthly_rate"),
+  chargeTypes: varchar("charge_types", { length: 100 }),
+  specialisms: text("specialisms"),
+  status: varchar("status", { length: 20 }).default("active"),
+  notes: text("notes"),
+  lastDealDate: timestamp("last_deal_date"),
+  totalDeals: integer("total_deals").default(0),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export const lenderDeals = pgTable("lender_deals", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  lenderId: uuid("lender_id").notNull(),
+  lotId: uuid("lot_id"),
+  borrowerName: varchar("borrower_name", { length: 100 }),
+  borrowerEmail: varchar("borrower_email", { length: 255 }),
+  loanAmountPence: integer("loan_amount_pence").notNull(),
+  propertyValuePence: integer("property_value_pence"),
+  ltv: numeric("ltv"),
+  monthlyRate: numeric("monthly_rate"),
+  termMonths: integer("term_months"),
+  chargeType: varchar("charge_type", { length: 20 }),
+  status: varchar("status", { length: 30 }).default("enquiry"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export const portfolios = pgTable("portfolios", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: uuid("contact_id"),
+  ownerName: varchar("owner_name", { length: 100 }).notNull(),
+  ownerEmail: varchar("owner_email", { length: 255 }),
+  portfolioName: varchar("portfolio_name", { length: 150 }),
+  strategy: varchar("strategy", { length: 50 }).default("btl"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+});
+
+export const portfolioProperties = pgTable("portfolio_properties", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  portfolioId: uuid("portfolio_id").notNull(),
+  address: text("address").notNull(),
+  propertyType: varchar("property_type", { length: 50 }),
+  purchasePricePence: integer("purchase_price_pence"),
+  currentValuePence: integer("current_value_pence"),
+  outstandingMortgagePence: integer("outstanding_mortgage_pence").default(0),
+  monthlyRentPence: integer("monthly_rent_pence").default(0),
+  monthlyMortgagePence: integer("monthly_mortgage_pence").default(0),
+  monthlyCostsPence: integer("monthly_costs_pence").default(0),
+  purchaseDate: timestamp("purchase_date"),
+  bedrooms: integer("bedrooms"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  role: varchar("role", { length: 20 }).notNull(),
+  content: text("content").notNull(),
+  contextUsed: varchar("context_used", { length: 50 }).default("general"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type PrivateLender = InferSelectModel<typeof privateLenders>;
+export type NewPrivateLender = InferInsertModel<typeof privateLenders>;
+
+export type LenderDeal = InferSelectModel<typeof lenderDeals>;
+export type NewLenderDeal = InferInsertModel<typeof lenderDeals>;
+
+export type Portfolio = InferSelectModel<typeof portfolios>;
+export type NewPortfolio = InferInsertModel<typeof portfolios>;
+
+export type PortfolioProperty = InferSelectModel<typeof portfolioProperties>;
+export type NewPortfolioProperty = InferInsertModel<typeof portfolioProperties>;
+
+export type ChatMessage = InferSelectModel<typeof chatMessages>;
+export type NewChatMessage = InferInsertModel<typeof chatMessages>;

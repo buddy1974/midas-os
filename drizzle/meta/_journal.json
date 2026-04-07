@@ -29,6 +29,20 @@
       "when": 1775585184020,
       "tag": "0003_chemical_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775586218389,
+      "tag": "0004_confused_ronan",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1775586688980,
+      "tag": "0005_dear_impossible_man",
+      "breakpoints": true
     }
   ]
 }

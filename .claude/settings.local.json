@@ -14,7 +14,16 @@
       "Bash(node:*)",
       "Bash(ls /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/next.config*)",
       "Bash(git push:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/events/\\\\[id\\\\]/register)",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/events/\\\\[id\\\\]/registrations)",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/events/\\\\[id\\\\]/register)",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/viewings/\\\\[id\\\\])",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/api/public/lots/\\\\[id\\\\])",
+      "Bash(mkdir -p /c/Users/loneb/Documents/ai-software-dev/projects/midas-os/app/viewings/\\\\[lotId\\\\]/book)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\\\\app\\\\api\\\\lenders\\\\[id]\\\\deals\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\\\\app\\\\api\\\\portfolios\\\\[id]\\\\properties\\\\[propId]\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\\\\app\\\\api\\\\portfolios\\\\[id]\\\\report\")"
     ]
   }
 }
