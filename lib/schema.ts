@@ -7,6 +7,7 @@ import {
   timestamp,
   jsonb,
   numeric,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
@@ -153,3 +154,42 @@ export const socialPosts = pgTable("social_posts", {
 
 export type SocialPost = InferSelectModel<typeof socialPosts>;
 export type NewSocialPost = InferInsertModel<typeof socialPosts>;
+
+export const events = pgTable("events", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  eventType: varchar("event_type", { length: 50 }).default("webinar").notNull(),
+  status: varchar("status", { length: 20 }).default("upcoming").notNull(),
+  location: varchar("location", { length: 255 }),
+  zoomLink: varchar("zoom_link", { length: 500 }),
+  eventDate: timestamp("event_date").notNull(),
+  endTime: timestamp("end_time"),
+  maxCapacity: integer("max_capacity"),
+  pricePence: integer("price_pence").default(0),
+  ticketLink: varchar("ticket_link", { length: 500 }),
+  lotId: uuid("lot_id"),
+  socialPostGenerated: boolean("social_post_generated").default(false).notNull(),
+  emailSent: boolean("email_sent").default(false).notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+});
+
+export const eventRegistrations = pgTable("event_registrations", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: uuid("event_id").notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 30 }),
+  investorType: varchar("investor_type", { length: 50 }),
+  source: varchar("source", { length: 100 }).default("direct").notNull(),
+  status: varchar("status", { length: 20 }).default("registered").notNull(),
+  notes: text("notes"),
+  registeredAt: timestamp("registered_at").default(sql`now()`).notNull(),
+});
+
+export type Event = InferSelectModel<typeof events>;
+export type NewEvent = InferInsertModel<typeof events>;
+
+export type EventRegistration = InferSelectModel<typeof eventRegistrations>;
+export type NewEventRegistration = InferInsertModel<typeof eventRegistrations>;

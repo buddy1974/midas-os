@@ -12,7 +12,7 @@ import {
   Mail,
   TrendingUp,
   MessageSquare,
-  Calendar,
+  CalendarDays,
   Inbox,
   MessageCircle,
   Send,
@@ -59,7 +59,7 @@ const navSections: NavSection[] = [
     title: "Automation",
     items: [
       { label: "Virtual Secretary", href: "/secretary", icon: Mail, badge: "NEW" },
-      { label: "Smart Calendar", href: "/calendar", icon: Calendar },
+      { label: "Events Manager", href: "/calendar", icon: CalendarDays, badge: "NEW" },
       { label: "Email Inbox", href: "/inbox", icon: Inbox, badgeCount: 5 },
     ],
   },

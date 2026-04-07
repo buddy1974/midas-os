@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog, newsletterSubscribers } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -206,12 +206,66 @@ export async function POST() {
     },
   ];
 
+  const seedEvents: NewEvent[] = [
+    {
+      title: "Midas Spring Auction 2026",
+      eventType: "auction",
+      status: "upcoming",
+      location: "Online — Live Stream",
+      zoomLink: "https://zoom.us/j/midas-spring-2026",
+      eventDate: new Date("2026-04-14T12:00:00Z"),
+      endTime: new Date("2026-04-14T15:00:00Z"),
+      maxCapacity: 500,
+      pricePence: 0,
+      description:
+        "Midas Property Auctions Spring Sale 2026. 12 lots across London and Essex. Legal packs available. Register to bid in advance.",
+    },
+    {
+      title: "Harrow School Business Networking Evening",
+      eventType: "networking",
+      status: "upcoming",
+      location: "Harrow School, Harrow on the Hill, HA1 3HP",
+      eventDate: new Date("2026-04-14T18:00:00Z"),
+      endTime: new Date("2026-04-14T22:30:00Z"),
+      maxCapacity: 200,
+      pricePence: 6000,
+      description:
+        "High-quality networking evening at Harrow School. Keynote: Lord Bilimoria (Founder of Cobra Beer). Dinner and drinks included. Serious business owners and property professionals.",
+    },
+    {
+      title: "How to Buy Below Market Value at Auction",
+      eventType: "webinar",
+      status: "upcoming",
+      location: "Zoom — Online",
+      zoomLink: "https://zoom.us/j/midas-webinar-bmv",
+      eventDate: new Date("2026-04-27T18:00:00Z"),
+      endTime: new Date("2026-04-27T19:30:00Z"),
+      maxCapacity: 100,
+      pricePence: 0,
+      description:
+        "Sam Fongho shares his exact system for finding and winning below-market-value properties at UK auction. Legal pack analysis, bidding strategy, creative finance options.",
+    },
+  ];
+
   const db = getDb();
   await db.insert(users).values(seedUsers).onConflictDoNothing();
   await db.insert(lots).values(seedLots);
   await db.insert(contacts).values(seedContacts);
   await db.insert(activityLog).values(seedActivity);
   await db.insert(newsletterSubscribers).values(seedSubscribers).onConflictDoNothing();
+
+  const insertedEvents = await db.insert(events).values(seedEvents).returning();
+  const springAuction = insertedEvents[0];
+
+  if (springAuction) {
+    const seedRegistrations: NewEventRegistration[] = [
+      { eventId: springAuction.id, name: "James Wilson", email: "james.wilson@property.co.uk", investorType: "hmo", source: "direct", status: "registered" },
+      { eventId: springAuction.id, name: "Priya Sharma", email: "priya.sharma@invest.com", investorType: "btl", source: "newsletter", status: "registered" },
+      { eventId: springAuction.id, name: "Marcus Obi", email: "marcus.obi@gmail.com", investorType: "hmo", source: "social", status: "registered" },
+      { eventId: springAuction.id, name: "Angela Chen", email: "angela.chen@portfolio.uk", investorType: "commercial", source: "direct", status: "registered" },
+    ];
+    await db.insert(eventRegistrations).values(seedRegistrations);
+  }
 
   return NextResponse.json({ success: true, message: "Seeded" });
 }
