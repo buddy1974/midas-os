@@ -137,6 +137,18 @@ function LotCard({ lot, onStageChange, updating }: LotCardProps) {
       >
         📱 Generate Social Post
       </button>
+
+      <button
+        onClick={() => router.push(`/viewings?lotId=${lot.id}`)}
+        className="w-full rounded px-2 py-1.5 text-xs font-medium text-left transition-colors"
+        style={{
+          backgroundColor: "rgba(99,179,237,0.06)",
+          border: "1px solid rgba(99,179,237,0.15)",
+          color: "rgba(99,179,237,0.7)",
+        }}
+      >
+        👁 Book Viewing
+      </button>
     </div>
   );
 }

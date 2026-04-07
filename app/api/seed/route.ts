@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -265,6 +265,51 @@ export async function POST() {
       { eventId: springAuction.id, name: "Angela Chen", email: "angela.chen@portfolio.uk", investorType: "commercial", source: "direct", status: "registered" },
     ];
     await db.insert(eventRegistrations).values(seedRegistrations);
+  }
+
+  // Seed viewings using first inserted lot
+  const [firstLot] = await db.select({ id: lots.id }).from(lots).limit(1);
+  if (firstLot) {
+    const now = new Date();
+    const seedViewings: NewViewing[] = [
+      {
+        lotId: firstLot.id,
+        contactName: "Marcus Okonkwo",
+        contactEmail: "marcus.o@gmail.com",
+        contactPhone: "+44 7700 900001",
+        viewingDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000 + 10 * 60 * 60 * 1000), // 2 days from now at 10:00
+        durationMinutes: 30,
+        status: "scheduled",
+        confirmationSent: true,
+        reminderSent: false,
+        notes: "Investor — has finance ready",
+      },
+      {
+        lotId: firstLot.id,
+        contactName: "Priya Sharma",
+        contactEmail: "priya.s@outlook.com",
+        contactPhone: "+44 7700 900002",
+        viewingDate: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000), // 3 days from now at 14:00
+        durationMinutes: 30,
+        status: "scheduled",
+        confirmationSent: true,
+        reminderSent: false,
+        notes: null,
+      },
+      {
+        lotId: firstLot.id,
+        contactName: "James Hutchinson",
+        contactEmail: "j.hutchinson@investco.co.uk",
+        contactPhone: "+44 7700 900003",
+        viewingDate: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000 + 11 * 60 * 60 * 1000), // 5 days from now at 11:00
+        durationMinutes: 60,
+        status: "scheduled",
+        confirmationSent: false,
+        reminderSent: false,
+        notes: "VIP — allocate extra time",
+      },
+    ];
+    await db.insert(viewings).values(seedViewings);
   }
 
   return NextResponse.json({ success: true, message: "Seeded" });
