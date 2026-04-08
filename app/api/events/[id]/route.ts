@@ -68,6 +68,7 @@ export async function PATCH(
     if (typeof body.lot_id === "string") updateData.lotId = body.lot_id || null;
     if (typeof body.social_post_generated === "boolean") updateData.socialPostGenerated = body.social_post_generated;
     if (typeof body.email_sent === "boolean") updateData.emailSent = body.email_sent;
+    if (typeof body.cover_image === "string") updateData.coverImage = body.cover_image || null;
 
     const [updated] = await db
       .update(events)

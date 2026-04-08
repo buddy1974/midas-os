@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { Lot } from "@/lib/schema";
+import ImageUpload from "@/components/ui/ImageUpload";
 
 interface AddLotModalProps {
   onClose: () => void;
@@ -45,6 +46,8 @@ export default function AddLotModal({ onClose, onCreated }: AddLotModalProps) {
     bedrooms: "",
     notes: "",
   });
+  const [coverImage, setCoverImage] = useState<string>("");
+  const [propertyImages, setPropertyImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -75,6 +78,8 @@ export default function AddLotModal({ onClose, onCreated }: AddLotModalProps) {
           pipeline_stage: form.pipeline_stage,
           bedrooms: form.bedrooms ? Number(form.bedrooms) : null,
           notes: form.notes.trim() || null,
+          cover_image: coverImage || null,
+          images: propertyImages,
         }),
       });
       if (!res.ok) {
@@ -235,6 +240,26 @@ export default function AddLotModal({ onClose, onCreated }: AddLotModalProps) {
                 color: "var(--color-text)",
               }}
               placeholder="Optional notes..."
+            />
+          </div>
+
+          <div>
+            <ImageUpload
+              value={coverImage}
+              onChange={(url) => setCoverImage(typeof url === "string" ? url : url[0] ?? "")}
+              folder="lots"
+              label="Cover Photo"
+            />
+          </div>
+
+          <div>
+            <ImageUpload
+              value={propertyImages}
+              onChange={(urls) => setPropertyImages(Array.isArray(urls) ? urls : [urls])}
+              multiple
+              folder="lots"
+              label="Property Photos (up to 8)"
+              maxImages={8}
             />
           </div>
 

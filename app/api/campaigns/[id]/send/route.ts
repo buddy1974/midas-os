@@ -42,9 +42,8 @@ function buildEmailHtml(subject: string, templateType: string): string {
   <!-- Header -->
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#080809;">
     <tr>
-      <td align="center" style="padding:32px 24px 28px;">
-        <p style="margin:0;font-family:Georgia,serif;font-size:28px;letter-spacing:8px;color:#C9A84C;text-transform:uppercase;">MIDAS</p>
-        <p style="margin:6px 0 0;font-size:10px;letter-spacing:4px;color:rgba(201,168,76,0.6);text-transform:uppercase;">Property Auctions</p>
+      <td align="center" style="padding:28px 24px;">
+        <img src="https://midas-property-sam.vercel.app/logo.png" alt="Midas Property Auctions" style="height:50px;width:auto;display:inline-block;" />
       </td>
     </tr>
   </table>

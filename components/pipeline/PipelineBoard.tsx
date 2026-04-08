@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import Image from "next/image";
 import type { Lot } from "@/lib/schema";
 import AddLotModal from "./AddLotModal";
+import LotDetailModal from "./LotDetailModal";
 
 interface Column {
   stage: string;
@@ -63,9 +65,10 @@ interface LotCardProps {
   lot: Lot;
   onStageChange: (id: string, stage: string) => Promise<void>;
   updating: boolean;
+  onOpenDetail: (lot: Lot) => void;
 }
 
-function LotCard({ lot, onStageChange, updating }: LotCardProps) {
+function LotCard({ lot, onStageChange, updating, onOpenDetail }: LotCardProps) {
   const router = useRouter();
   return (
     <div
@@ -75,8 +78,17 @@ function LotCard({ lot, onStageChange, updating }: LotCardProps) {
         border: "1px solid var(--color-border)",
       }}
     >
+      {lot.coverImage && (
+        <div
+          className="relative w-full rounded overflow-hidden mb-1 cursor-pointer"
+          style={{ height: "80px" }}
+          onClick={() => onOpenDetail(lot)}
+        >
+          <Image src={lot.coverImage} alt={lot.address} fill style={{ objectFit: "cover" }} />
+        </div>
+      )}
       <p
-        className="text-sm font-medium leading-snug"
+        className="text-sm font-medium leading-snug cursor-pointer hover:underline"
         style={{
           color: "var(--color-text)",
           display: "-webkit-box",
@@ -84,6 +96,7 @@ function LotCard({ lot, onStageChange, updating }: LotCardProps) {
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}
+        onClick={() => onOpenDetail(lot)}
       >
         {lot.address}
       </p>
@@ -160,6 +173,7 @@ export default function PipelineBoard() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [activeCol, setActiveCol] = useState(0);
+  const [detailLot, setDetailLot] = useState<Lot | null>(null);
 
   async function fetchLots() {
     try {
@@ -288,6 +302,7 @@ export default function PipelineBoard() {
                       lot={lot}
                       onStageChange={handleStageChange}
                       updating={updatingId === lot.id}
+                      onOpenDetail={setDetailLot}
                     />
                   ))
                 )}
@@ -370,6 +385,7 @@ export default function PipelineBoard() {
                       lot={lot}
                       onStageChange={handleStageChange}
                       updating={updatingId === lot.id}
+                      onOpenDetail={setDetailLot}
                     />
                   ))
                 )}
@@ -385,6 +401,17 @@ export default function PipelineBoard() {
           onCreated={(lot) => {
             setLots((prev) => [lot, ...prev]);
             setShowModal(false);
+          }}
+        />
+      )}
+
+      {detailLot && (
+        <LotDetailModal
+          lot={detailLot}
+          onClose={() => setDetailLot(null)}
+          onStageChange={async (id, stage) => {
+            await handleStageChange(id, stage);
+            setDetailLot(null);
           }}
         />
       )}

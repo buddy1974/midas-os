@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -93,6 +94,32 @@ const BOTTOM_NAV: NavItem[] = [
   { label: "CRM", href: "/crm", icon: Users },
 ];
 
+function BrandLogo() {
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <Image
+        src="/logo.png"
+        alt="Midas"
+        width={120}
+        height={40}
+        style={{ objectFit: "contain", display: "block" }}
+        onError={(e) => {
+          const target = e.currentTarget as HTMLImageElement;
+          target.style.display = "none";
+          const fallback = target.nextElementSibling as HTMLElement | null;
+          if (fallback) fallback.style.display = "block";
+        }}
+      />
+      <h1
+        className="text-lg font-serif tracking-widest uppercase"
+        style={{ color: "var(--color-gold)", display: "none" }}
+      >
+        Midas OS
+      </h1>
+    </div>
+  );
+}
+
 interface SidebarProps {
   user: { name: string; email: string; role: string };
   drawerOpen: boolean;
@@ -178,14 +205,9 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
         }}
       >
         {/* Brand */}
-        <div className="px-5 py-6" style={{ borderBottom: "1px solid var(--color-border)" }}>
-          <h1
-            className="text-lg font-serif tracking-widest uppercase"
-            style={{ color: "var(--color-gold)" }}
-          >
-            Midas OS
-          </h1>
-          <p className="text-xs tracking-wider mt-0.5" style={{ color: "var(--color-text-dim)" }}>
+        <div className="px-5 py-5" style={{ borderBottom: "1px solid var(--color-border)" }}>
+          <BrandLogo />
+          <p className="text-xs tracking-wider mt-1.5" style={{ color: "var(--color-text-dim)" }}>
             Property Intelligence
           </p>
         </div>
@@ -300,13 +322,8 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
               style={{ borderBottom: "1px solid var(--color-border)" }}
             >
               <div>
-                <h1
-                  className="text-lg font-serif tracking-widest uppercase"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  Midas OS
-                </h1>
-                <p className="text-xs tracking-wider mt-0.5" style={{ color: "var(--color-text-dim)" }}>
+                <BrandLogo />
+                <p className="text-xs tracking-wider mt-1.5" style={{ color: "var(--color-text-dim)" }}>
                   Property Intelligence
                 </p>
               </div>

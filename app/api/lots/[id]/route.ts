@@ -26,24 +26,24 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json() as Record<string, unknown>;
 
-    if (!body.pipeline_stage || typeof body.pipeline_stage !== "string") {
-      return NextResponse.json({ error: "pipeline_stage is required" }, { status: 400 });
-    }
-
-    if (!isValidStage(body.pipeline_stage)) {
-      return NextResponse.json(
-        { error: `Invalid stage. Valid stages: ${VALID_STAGES.join(", ")}` },
-        { status: 400 }
-      );
+    if (body.pipeline_stage !== undefined) {
+      if (typeof body.pipeline_stage !== "string" || !isValidStage(body.pipeline_stage)) {
+        return NextResponse.json(
+          { error: `Invalid stage. Valid stages: ${VALID_STAGES.join(", ")}` },
+          { status: 400 }
+        );
+      }
     }
 
     const db = getDb();
+    const updateData: Record<string, unknown> = { updatedAt: sql`now()` };
+    if (typeof body.pipeline_stage === "string") updateData.pipelineStage = body.pipeline_stage as PipelineStage;
+    if (typeof body.cover_image === "string") updateData.coverImage = body.cover_image || null;
+    if (Array.isArray(body.images)) updateData.images = JSON.stringify(body.images);
+
     const [updated] = await db
       .update(lots)
-      .set({
-        pipelineStage: body.pipeline_stage as PipelineStage,
-        updatedAt: sql`now()`,
-      })
+      .set(updateData)
       .where(eq(lots.id, id))
       .returning();
 

@@ -55,6 +55,8 @@ export async function POST(req: NextRequest) {
       pipelineStage,
       bedrooms: typeof body.bedrooms === "number" ? body.bedrooms : null,
       notes: typeof body.notes === "string" ? body.notes : null,
+      coverImage: typeof body.cover_image === "string" ? body.cover_image || null : null,
+      images: Array.isArray(body.images) ? JSON.stringify(body.images) : "[]",
     };
 
     const db = getDb();

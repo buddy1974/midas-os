@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
         pricePence: typeof body.price_pence === "number" ? body.price_pence : 0,
         ticketLink: typeof body.ticket_link === "string" ? body.ticket_link || null : null,
         lotId: typeof body.lot_id === "string" ? body.lot_id || null : null,
+        coverImage: typeof body.cover_image === "string" ? body.cover_image || null : null,
       })
       .returning();
 
