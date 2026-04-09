@@ -25,6 +25,18 @@ export async function POST() {
       password: hashedPassword,
       role: "admin",
     },
+    {
+      name: "Tah Fongyen",
+      email: "tah@midaspropertyauctions.co.uk",
+      password: hashedPassword,
+      role: "member",
+    },
+    {
+      name: "Collins",
+      email: "collins@midaspropertyauctions.co.uk",
+      password: hashedPassword,
+      role: "member",
+    },
   ];
 
   const seedLots: NewLot[] = [

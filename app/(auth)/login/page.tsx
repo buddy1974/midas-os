@@ -5,9 +5,9 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const TEAM = [
-  { name: "Sam Fongho",     role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
-  { name: "Team Member 2",  role: "Member", email: "member2@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
-  { name: "Team Member 3",  role: "Member", email: "member3@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
+  { name: "Sam Fongho",   role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Tah Fongyen",  role: "Member", email: "tah@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Collins",      role: "Member", email: "collins@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
 ];
 
 export default function LoginPage() {
