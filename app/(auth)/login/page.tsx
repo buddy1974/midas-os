@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 const TEAM = [
   { name: "Sam Fongho",   role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Powell",       role: "Member", email: "powell@midaspropertyauctions.co.uk",  password: "MidasOS2026!" },
   { name: "Tah Fongyen",  role: "Member", email: "tah@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
   { name: "Collins",      role: "Member", email: "collins@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
 ];

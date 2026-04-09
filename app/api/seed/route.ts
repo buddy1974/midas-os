@@ -26,6 +26,12 @@ export async function POST() {
       role: "admin",
     },
     {
+      name: "Powell",
+      email: "powell@midaspropertyauctions.co.uk",
+      password: hashedPassword,
+      role: "member",
+    },
+    {
       name: "Tah Fongyen",
       email: "tah@midaspropertyauctions.co.uk",
       password: hashedPassword,
