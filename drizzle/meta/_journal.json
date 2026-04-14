@@ -50,6 +50,20 @@
       "when": 1775633902181,
       "tag": "0006_dizzy_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1775934660588,
+      "tag": "0007_light_ben_urich",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1776163863893,
+      "tag": "0008_serious_spencer_smythe",
+      "breakpoints": true
     }
   ]
 }

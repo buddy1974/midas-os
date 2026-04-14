@@ -33,6 +33,8 @@ export const lots = pgTable("lots", {
   notes: text("notes"),
   coverImage: varchar("cover_image", { length: 500 }),
   images: text("images").default("[]"),
+  showOnWebsite: boolean("show_on_website").default(false).notNull(),
+  isOffMarket: boolean("is_off_market").default(false).notNull(),
   createdAt: timestamp("created_at").default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
 });
@@ -307,3 +309,91 @@ export type NewPortfolioProperty = InferInsertModel<typeof portfolioProperties>;
 
 export type ChatMessage = InferSelectModel<typeof chatMessages>;
 export type NewChatMessage = InferInsertModel<typeof chatMessages>;
+
+// ─── Loan Applications ──────────────────────────────────────────────────────
+
+export const loanApplications = pgTable("loan_applications", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+
+  // Loan details
+  loanType: varchar("loan_type", { length: 20 }).default("bridging"),
+  loanPurpose: varchar("loan_purpose", { length: 20 }),
+  loanAmountPence: integer("loan_amount_pence").notNull(),
+  loanTermMonths: integer("loan_term_months").notNull(),
+  monthlyRate: numeric("monthly_rate").default("0.85"),
+  repaymentMethod: varchar("repayment_method", { length: 20 }).default("sale"),
+
+  // Property security
+  propertyAddress: text("property_address").notNull(),
+  propertyType: varchar("property_type", { length: 50 }),
+  propertyStatus: varchar("property_status", { length: 20 }),
+  propertyValuePence: integer("property_value_pence"),
+  purchasePricePence: integer("purchase_price_pence"),
+  chargeType: varchar("charge_type", { length: 20 }).default("first"),
+  estimatedRentalPence: integer("estimated_rental_pence"),
+
+  // Applicant
+  applicantType: varchar("applicant_type", { length: 20 }).default("personal"),
+  applicantName: varchar("applicant_name", { length: 100 }).notNull(),
+  applicantEmail: varchar("applicant_email", { length: 255 }).notNull(),
+  applicantPhone: varchar("applicant_phone", { length: 30 }),
+  companyName: varchar("company_name", { length: 150 }),
+
+  // Financial background flags
+  refusedMortgage: boolean("refused_mortgage").default(false),
+  hasCcj: boolean("has_ccj").default(false),
+  hasBankruptcy: boolean("has_bankruptcy").default(false),
+  missedPayments: boolean("missed_payments").default(false),
+  hasArrears: boolean("has_arrears").default(false),
+
+  // AI scoring
+  aiScore: integer("ai_score"),
+  aiVerdict: varchar("ai_verdict", { length: 30 }),
+  aiRisk: varchar("ai_risk", { length: 20 }),
+  aiSummary: text("ai_summary"),
+  ltv: numeric("ltv"),
+
+  // Pipeline status
+  status: varchar("status", { length: 30 }).default("enquiry"),
+
+  // Admin
+  notes: text("notes"),
+  brokerName: varchar("broker_name", { length: 100 }),
+  brokerEmail: varchar("broker_email", { length: 255 }),
+  assignedTo: varchar("assigned_to", { length: 100 }),
+  source: varchar("source", { length: 50 }).default("website"),
+  facilityLetterSent: boolean("facility_letter_sent").default(false),
+
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const loanRepayments = pgTable("loan_repayments", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  applicationId: uuid("application_id").notNull(),
+  monthNumber: integer("month_number").notNull(),
+  dueDate: timestamp("due_date").notNull(),
+  amountPence: integer("amount_pence").notNull(),
+  paid: boolean("paid").default(false),
+  paidDate: timestamp("paid_date"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const loanDocuments = pgTable("loan_documents", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  applicationId: uuid("application_id").notNull(),
+  documentType: varchar("document_type", { length: 50 }).notNull(),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  fileUrl: varchar("file_url", { length: 500 }).notNull(),
+  uploadedBy: varchar("uploaded_by", { length: 100 }),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export type LoanApplication = InferSelectModel<typeof loanApplications>;
+export type NewLoanApplication = InferInsertModel<typeof loanApplications>;
+
+export type LoanRepayment = InferSelectModel<typeof loanRepayments>;
+export type NewLoanRepayment = InferInsertModel<typeof loanRepayments>;
+
+export type LoanDocument = InferSelectModel<typeof loanDocuments>;
+export type NewLoanDocument = InferInsertModel<typeof loanDocuments>;

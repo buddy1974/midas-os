@@ -1,0 +1,61 @@
+CREATE TABLE "loan_applications" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"loan_type" varchar(20) DEFAULT 'bridging',
+	"loan_purpose" varchar(20),
+	"loan_amount_pence" integer NOT NULL,
+	"loan_term_months" integer NOT NULL,
+	"monthly_rate" numeric DEFAULT '0.85',
+	"repayment_method" varchar(20) DEFAULT 'sale',
+	"property_address" text NOT NULL,
+	"property_type" varchar(50),
+	"property_status" varchar(20),
+	"property_value_pence" integer,
+	"purchase_price_pence" integer,
+	"charge_type" varchar(20) DEFAULT 'first',
+	"estimated_rental_pence" integer,
+	"applicant_type" varchar(20) DEFAULT 'personal',
+	"applicant_name" varchar(100) NOT NULL,
+	"applicant_email" varchar(255) NOT NULL,
+	"applicant_phone" varchar(30),
+	"company_name" varchar(150),
+	"refused_mortgage" boolean DEFAULT false,
+	"has_ccj" boolean DEFAULT false,
+	"has_bankruptcy" boolean DEFAULT false,
+	"missed_payments" boolean DEFAULT false,
+	"has_arrears" boolean DEFAULT false,
+	"ai_score" integer,
+	"ai_verdict" varchar(30),
+	"ai_risk" varchar(20),
+	"ai_summary" text,
+	"ltv" numeric,
+	"status" varchar(30) DEFAULT 'enquiry',
+	"notes" text,
+	"broker_name" varchar(100),
+	"broker_email" varchar(255),
+	"assigned_to" varchar(100),
+	"source" varchar(50) DEFAULT 'website',
+	"facility_letter_sent" boolean DEFAULT false,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "loan_documents" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"application_id" uuid NOT NULL,
+	"document_type" varchar(50) NOT NULL,
+	"file_name" varchar(255) NOT NULL,
+	"file_url" varchar(500) NOT NULL,
+	"uploaded_by" varchar(100),
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "loan_repayments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"application_id" uuid NOT NULL,
+	"month_number" integer NOT NULL,
+	"due_date" timestamp NOT NULL,
+	"amount_pence" integer NOT NULL,
+	"paid" boolean DEFAULT false,
+	"paid_date" timestamp,
+	"created_at" timestamp DEFAULT now()
+);

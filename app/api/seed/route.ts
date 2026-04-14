@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings, privateLenders, portfolios, portfolioProperties, chatMessages } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing, NewPrivateLender, NewPortfolio, NewPortfolioProperty, NewChatMessage } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings, privateLenders, portfolios, portfolioProperties, chatMessages, loanApplications, loanRepayments } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing, NewPrivateLender, NewPortfolio, NewPortfolioProperty, NewChatMessage, NewLoanApplication, NewLoanRepayment } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -430,6 +430,125 @@ export async function POST() {
     },
   ];
   await db.insert(chatMessages).values(seedChats);
+
+  // Seed loan applications
+  const seedLoans: NewLoanApplication[] = [
+    {
+      loanType: "bridging",
+      loanPurpose: "purchase",
+      loanAmountPence: 12000000,
+      loanTermMonths: 12,
+      monthlyRate: "0.85",
+      repaymentMethod: "sale",
+      propertyAddress: "202A Bennetts Castle Lane, Dagenham RM8 3XP",
+      propertyType: "Residential Flat",
+      propertyStatus: "purchasing",
+      propertyValuePence: 17500000,
+      purchasePricePence: 16000000,
+      chargeType: "first",
+      applicantType: "personal",
+      applicantName: "James Wilson",
+      applicantEmail: "james.wilson@property.co.uk",
+      applicantPhone: "07700 900123",
+      refusedMortgage: false,
+      hasCcj: false,
+      hasBankruptcy: false,
+      missedPayments: false,
+      hasArrears: false,
+      aiScore: 82,
+      aiVerdict: "Strong",
+      aiRisk: "Low",
+      ltv: "68.57",
+      aiSummary: "Clean background with strong LTV at 68.5%. Auction purchase with clear exit via sale or refinance. Recommend approval subject to standard legal checks.",
+      status: "terms_issued",
+      source: "direct",
+      facilityLetterSent: false,
+    },
+    {
+      loanType: "refurb",
+      loanPurpose: "purchase",
+      loanAmountPence: 22500000,
+      loanTermMonths: 18,
+      monthlyRate: "0.95",
+      repaymentMethod: "refinance",
+      propertyAddress: "14A Green Lane, Newham E13 7PH",
+      propertyType: "HMO",
+      propertyStatus: "purchasing",
+      propertyValuePence: 34000000,
+      purchasePricePence: 28500000,
+      chargeType: "first",
+      applicantType: "corporate",
+      applicantName: "Angela Chen",
+      companyName: "Chen Property Holdings Ltd",
+      applicantEmail: "angela.chen@portfolio.uk",
+      applicantPhone: "07700 900321",
+      refusedMortgage: false,
+      hasCcj: false,
+      hasBankruptcy: false,
+      missedPayments: false,
+      hasArrears: false,
+      aiScore: 88,
+      aiVerdict: "Strong",
+      aiRisk: "Low",
+      ltv: "66.18",
+      aiSummary: "Strong corporate application with experienced director. HMO conversion in high demand Newham location near Elizabeth Line. Exit via refinance onto term BTL mortgage is credible. Strong deal.",
+      status: "under_assessment",
+      source: "referral",
+      facilityLetterSent: false,
+    },
+    {
+      loanType: "bridging",
+      loanPurpose: "refinance",
+      loanAmountPence: 8500000,
+      loanTermMonths: 6,
+      monthlyRate: "0.85",
+      repaymentMethod: "refinance",
+      propertyAddress: "7 Heathway, Dagenham RM10 8QJ",
+      propertyType: "Residential Flat",
+      propertyStatus: "owned",
+      propertyValuePence: 14000000,
+      chargeType: "second",
+      applicantType: "personal",
+      applicantName: "Derek Brown",
+      applicantEmail: "derek.brown@london.com",
+      applicantPhone: "07700 900654",
+      refusedMortgage: false,
+      hasCcj: true,
+      hasBankruptcy: false,
+      missedPayments: true,
+      hasArrears: false,
+      aiScore: 48,
+      aiVerdict: "Decline",
+      aiRisk: "High",
+      ltv: "60.71",
+      aiSummary: "CCJ and missed payments flagged. Second charge adds risk. Despite acceptable LTV, background issues make this a high risk application. Recommend decline or request full background explanation before proceeding.",
+      status: "enquiry",
+      source: "website",
+      facilityLetterSent: false,
+    },
+  ];
+
+  const insertedLoans = await db.insert(loanApplications).values(seedLoans).returning();
+  const now = new Date();
+
+  for (const loan of insertedLoans) {
+    const monthlyRate = Number(loan.monthlyRate ?? 0.85);
+    const monthlyInterest = Math.round(loan.loanAmountPence * (monthlyRate / 100));
+    const repayments: NewLoanRepayment[] = [];
+
+    for (let month = 1; month <= loan.loanTermMonths; month++) {
+      const dueDate = new Date(now.getTime() + month * 30 * 24 * 60 * 60 * 1000);
+      const isFinal = month === loan.loanTermMonths;
+      repayments.push({
+        applicationId: loan.id,
+        monthNumber: month,
+        dueDate,
+        amountPence: isFinal ? monthlyInterest + loan.loanAmountPence : monthlyInterest,
+        paid: false,
+      });
+    }
+    await db.insert(loanRepayments).values(repayments);
+  }
 
   return NextResponse.json({ success: true, message: "Seeded" });
 }

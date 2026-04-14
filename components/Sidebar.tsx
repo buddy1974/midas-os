@@ -25,6 +25,8 @@ import {
   LogOut,
   Menu,
   X,
+  Globe,
+  Banknote,
 } from "lucide-react";
 
 interface NavItem {
@@ -57,6 +59,7 @@ const navSections: NavSection[] = [
       { label: "Finance", href: "/finance", icon: Calculator },
       { label: "CRM", href: "/crm", icon: Users },
       { label: "Lender Portal", href: "/lenders", icon: Landmark },
+      { label: "Loan Pipeline", href: "/loans", icon: Banknote, badge: "NEW" },
       { label: "Portfolio", href: "/portfolio", icon: PieChart },
       { label: "Campaigns", href: "/campaigns", icon: Mail, badge: "AI" },
       { label: "Market Pulse", href: "/market", icon: TrendingUp },
@@ -76,6 +79,12 @@ const navSections: NavSection[] = [
       { label: "Social Content", href: "/social", icon: Share2, badge: "AI" },
       { label: "WhatsApp Hub", href: "/whatsapp", icon: MessageCircle },
       { label: "Newsletter", href: "/newsletter", icon: Send },
+    ],
+  },
+  {
+    title: "Website",
+    items: [
+      { label: "Website", href: "/website", icon: Globe },
     ],
   },
   {
