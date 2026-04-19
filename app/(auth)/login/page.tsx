@@ -5,10 +5,15 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const TEAM = [
-  { name: "Sam Fongho",   role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
-  { name: "Powell",       role: "Member", email: "powell@midaspropertyauctions.co.uk",  password: "MidasOS2026!" },
-  { name: "Tah Fongyen",  role: "Member", email: "tah@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
-  { name: "Collins",      role: "Member", email: "collins@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
+  { name: "Sam Fongho",    role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Powell",        role: "Member", email: "powell@midaspropertyauctions.co.uk",  password: "MidasOS2026!" },
+  { name: "Tah Fongyen",   role: "Member", email: "tah@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
+  { name: "Collins",       role: "Member", email: "collins@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
+  { name: "Sara Williams", role: "Member", email: "sara@midaspropertyauctions.co.uk",    password: "MidasOS2026!" },
+  { name: "Aarti Sawhney", role: "Member", email: "aarti@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
+  { name: "Chris Ola",     role: "Member", email: "chris@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
+  { name: "Queen Igwe",    role: "Member", email: "queen@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
+  { name: "Munya Forbang", role: "Member", email: "munya@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
 ];
 
 export default function LoginPage() {
