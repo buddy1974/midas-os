@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "show_on_website" boolean DEFAULT false NOT NULL;

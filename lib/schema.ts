@@ -178,6 +178,7 @@ export const events = pgTable("events", {
   images: text("images").default("[]"),
   socialPostGenerated: boolean("social_post_generated").default(false).notNull(),
   emailSent: boolean("email_sent").default(false).notNull(),
+  showOnWebsite: boolean("show_on_website").default(false).notNull(),
   createdAt: timestamp("created_at").default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
 });

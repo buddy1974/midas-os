@@ -29,7 +29,12 @@
       "Bash(curl:*)",
       "Bash(git -C \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\" add .)",
       "Bash(git -C \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\" commit -m \"chore: remove temporary add-team route\")",
-      "Bash(git -C \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\" push origin main)"
+      "Bash(git -C \"C:\\\\Users\\\\loneb\\\\Documents\\\\ai-software-dev\\\\projects\\\\midas-os\" push origin main)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo \"TSC exit: $?\")",
+      "Bash(echo \"BUILD exit: $?\")",
+      "Bash(echo \"GEN exit: $?\")",
+      "Bash(echo \"PUSH exit: $?\")"
     ]
   }
 }

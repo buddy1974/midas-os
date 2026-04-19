@@ -35,6 +35,7 @@ interface NavItem {
   icon: React.ElementType;
   badge?: string;
   badgeCount?: number;
+  badgeColor?: 'gold' | 'green';
 }
 
 interface NavSection {
@@ -84,7 +85,7 @@ const navSections: NavSection[] = [
   {
     title: "Website",
     items: [
-      { label: "Website", href: "/website", icon: Globe },
+      { label: "Website", href: "/website", icon: Globe, badge: "LIVE", badgeColor: "green" as const },
     ],
   },
   {
@@ -176,8 +177,8 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
           <span
             className="text-xs px-1.5 py-0.5 rounded font-semibold"
             style={{
-              backgroundColor: "rgba(201,168,76,0.15)",
-              color: "var(--color-gold)",
+              backgroundColor: item.badgeColor === 'green' ? 'rgba(34,197,94,0.15)' : 'rgba(201,168,76,0.15)',
+              color: item.badgeColor === 'green' ? '#22C55E' : 'var(--color-gold)',
               fontSize: "10px",
             }}
           >

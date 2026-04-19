@@ -40,6 +40,8 @@ export async function PATCH(
     if (typeof body.pipeline_stage === "string") updateData.pipelineStage = body.pipeline_stage as PipelineStage;
     if (typeof body.cover_image === "string") updateData.coverImage = body.cover_image || null;
     if (Array.isArray(body.images)) updateData.images = JSON.stringify(body.images);
+    if (typeof body.showOnWebsite === "boolean") updateData.showOnWebsite = body.showOnWebsite;
+    if (typeof body.isOffMarket === "boolean") updateData.isOffMarket = body.isOffMarket;
 
     const [updated] = await db
       .update(lots)
