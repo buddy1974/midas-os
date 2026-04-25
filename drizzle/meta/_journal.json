@@ -71,6 +71,13 @@
       "when": 1776598978515,
       "tag": "0009_jazzy_morbius",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1777123506185,
+      "tag": "0010_tranquil_inhumans",
+      "breakpoints": true
     }
   ]
 }

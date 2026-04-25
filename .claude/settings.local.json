@@ -34,7 +34,8 @@
       "Bash(echo \"TSC exit: $?\")",
       "Bash(echo \"BUILD exit: $?\")",
       "Bash(echo \"GEN exit: $?\")",
-      "Bash(echo \"PUSH exit: $?\")"
+      "Bash(echo \"PUSH exit: $?\")",
+      "Bash(echo \"ENV exit: $?\")"
     ]
   }
 }

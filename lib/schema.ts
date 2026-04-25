@@ -398,3 +398,80 @@ export type NewLoanRepayment = InferInsertModel<typeof loanRepayments>;
 
 export type LoanDocument = InferSelectModel<typeof loanDocuments>;
 export type NewLoanDocument = InferInsertModel<typeof loanDocuments>;
+
+// ─── CMS: Site Config ────────────────────────────────────────────────────────
+
+export const siteConfig = pgTable("site_config", {
+  key: varchar("key", { length: 200 }).primaryKey(),
+  value: text("value").notNull().default(""),
+  category: varchar("category", { length: 50 }).default("general"),
+  label: varchar("label", { length: 200 }),
+  fieldType: varchar("field_type", { length: 20 }).default("text"),
+  sortOrder: integer("sort_order").default(0),
+  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+});
+
+export type SiteConfig = InferSelectModel<typeof siteConfig>;
+export type NewSiteConfig = InferInsertModel<typeof siteConfig>;
+
+// ─── CMS: Team Members ───────────────────────────────────────────────────────
+
+export const teamMembers = pgTable("team_members", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 100 }).notNull(),
+  role: varchar("role", { length: 100 }),
+  initials: varchar("initials", { length: 4 }),
+  bio: text("bio"),
+  phone: varchar("phone", { length: 30 }),
+  email: varchar("email", { length: 255 }),
+  linkedin: varchar("linkedin", { length: 500 }),
+  photoUrl: varchar("photo_url", { length: 500 }),
+  sortOrder: integer("sort_order").default(0),
+  isActive: boolean("is_active").default(true),
+  showOnWebsite: boolean("show_on_website").default(true),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type TeamMember = InferSelectModel<typeof teamMembers>;
+export type NewTeamMember = InferInsertModel<typeof teamMembers>;
+
+// ─── CMS: Testimonials ───────────────────────────────────────────────────────
+
+export const cmsTestimonials = pgTable("cms_testimonials", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 100 }).notNull(),
+  location: varchar("location", { length: 150 }),
+  text: text("text").notNull(),
+  rating: integer("rating").default(5),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  source: varchar("source", { length: 50 }).default("direct"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+});
+
+export type CmsTestimonial = InferSelectModel<typeof cmsTestimonials>;
+export type NewCmsTestimonial = InferInsertModel<typeof cmsTestimonials>;
+
+// ─── CMS: Blog Posts ─────────────────────────────────────────────────────────
+
+export const blogPosts = pgTable("blog_posts", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  category: varchar("category", { length: 50 }),
+  tags: text("tags"),
+  content: text("content"),
+  excerpt: text("excerpt"),
+  coverImage: varchar("cover_image", { length: 500 }),
+  gradient: varchar("gradient", { length: 100 }).default("from-blue-900 to-[#080809]"),
+  isPublished: boolean("is_published").default(false),
+  publishedAt: timestamp("published_at"),
+  author: varchar("author", { length: 100 }).default("Midas Property Auctions"),
+  seoTitle: varchar("seo_title", { length: 255 }),
+  seoDescription: text("seo_description"),
+  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+});
+
+export type BlogPost = InferSelectModel<typeof blogPosts>;
+export type NewBlogPost = InferInsertModel<typeof blogPosts>;
