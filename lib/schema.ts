@@ -446,6 +446,8 @@ export const cmsTestimonials = pgTable("cms_testimonials", {
   isActive: boolean("is_active").default(true),
   sortOrder: integer("sort_order").default(0),
   source: varchar("source", { length: 50 }).default("direct"),
+  photoUrl: varchar("photo_url", { length: 500 }),
+  googleReviewUrl: varchar("google_review_url", { length: 500 }),
   createdAt: timestamp("created_at").default(sql`now()`).notNull(),
 });
 
@@ -469,6 +471,11 @@ export const blogPosts = pgTable("blog_posts", {
   author: varchar("author", { length: 100 }).default("Midas Property Auctions"),
   seoTitle: varchar("seo_title", { length: 255 }),
   seoDescription: text("seo_description"),
+  ogImage: varchar("og_image", { length: 500 }),
+  ogTitle: varchar("og_title", { length: 255 }),
+  keywords: text("keywords"),
+  readingTime: integer("reading_time"),
+  images: text("images"),
   createdAt: timestamp("created_at").default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
 });

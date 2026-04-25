@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 // In-memory rate limiter — max 10 req/min per IP
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -24,10 +25,6 @@ interface OracleRequestBody {
   notes: string;
 }
 
-interface AnthropicMessage {
-  content: { type: string; text: string }[];
-}
-
 export async function POST(req: NextRequest) {
   // Rate limit by IP
   const ip =
@@ -40,8 +37,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!hasOpenAI()) {
     return NextResponse.json(
       { error: "Oracle offline", demo: true },
       { status: 503 }
@@ -99,32 +95,18 @@ Respond ONLY with a JSON object — no markdown, no code blocks, no preamble. Th
 }`;
 
   try {
-    const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 1200,
-        system: systemPrompt,
-        messages: [{ role: "user", content: prompt }],
-      }),
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 1200,
+      temperature: 0.7,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt },
+      ],
     });
 
-    if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
-      console.error("[Oracle] Anthropic API error:", errText);
-      return NextResponse.json(
-        { error: "Oracle analysis failed" },
-        { status: 502 }
-      );
-    }
-
-    const anthropicData = await anthropicRes.json() as AnthropicMessage;
-    const rawText = anthropicData.content?.[0]?.text ?? "";
+    const rawText = completion.choices[0].message.content ?? "";
 
     let parsed: unknown;
     try {
@@ -136,7 +118,7 @@ Respond ONLY with a JSON object — no markdown, no code blocks, no preamble. Th
 
     return NextResponse.json(parsed);
   } catch (err) {
-    console.error("[Oracle] Fetch error:", err);
+    console.error("[Oracle] error:", err);
     return NextResponse.json({ error: "Oracle analysis failed" }, { status: 500 });
   }
 }

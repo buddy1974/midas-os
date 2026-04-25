@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 interface LotInfo {
   address?: string;
@@ -63,8 +64,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json() as GenerateBody;
     const { templateType = "auction_alert", lots = [], eventDetails, notes } = body;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       const demo = DEMO_SUGGESTIONS[templateType] ?? DEMO_SUGGESTIONS.auction_alert;
       return NextResponse.json(demo);
     }
@@ -87,17 +87,15 @@ ${notes ? `Additional notes: ${notes}` : ""}
 
 Generate email copy for this Midas Property Auctions newsletter.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 500,
-        system: `You are an expert email copywriter for Midas Property Auctions, a UK property auction company. You write compelling, professional email content for property investors in London and Essex.
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 500,
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert email copywriter for Midas Property Auctions, a UK property auction company. You write compelling, professional email content for property investors in London and Essex.
 
 Return ONLY a JSON object with exactly these keys:
 {
@@ -106,19 +104,12 @@ Return ONLY a JSON object with exactly these keys:
   "intro": string (2-3 sentences, warm professional tone, UK English, references the specific content)
 }
 No markdown, no code blocks, no explanation.`,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+        },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    if (!response.ok) {
-      const demo = DEMO_SUGGESTIONS[templateType] ?? DEMO_SUGGESTIONS.auction_alert;
-      return NextResponse.json(demo);
-    }
-
-    const data = await response.json() as {
-      content?: Array<{ type: string; text: string }>;
-    };
-    const text = data.content?.[0]?.text ?? "";
+    const text = completion.choices[0].message.content ?? "";
 
     const parsed = JSON.parse(text) as AiSuggestion;
     return NextResponse.json(parsed);

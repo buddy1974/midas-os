@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { loanApplications } from "@/lib/schema";
 import { eq, sql } from "drizzle-orm";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 function fmtPence(p: number): string {
   return `£${(p / 100).toLocaleString("en-GB", { minimumFractionDigits: 0 })}`;
@@ -108,10 +109,9 @@ export async function POST(
       );
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
     let letterContent: string;
 
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       letterContent = demoLetter(application);
     } else {
       const totalInterest = fmtPence(
@@ -151,26 +151,23 @@ Include:
 Mark clearly: SUBJECT TO CONTRACT
 This is a draft for review, not a binding offer.`;
 
-      const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-opus-4-5",
+      try {
+        const openai = getOpenAI();
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o",
           max_tokens: 2000,
-          system: `You are a UK solicitor drafting a bridging loan facility letter for Midas Property Auctions, a private lender based in London. Use formal UK legal letter format. UK English. Professional.`,
-          messages: [{ role: "user", content: userPrompt }],
-        }),
-      });
-
-      if (!anthropicRes.ok) {
+          temperature: 0.7,
+          messages: [
+            {
+              role: "system",
+              content: `You are a UK solicitor drafting a bridging loan facility letter for Midas Property Auctions, a private lender based in London. Use formal UK legal letter format. UK English. Professional.`,
+            },
+            { role: "user", content: userPrompt },
+          ],
+        });
+        letterContent = completion.choices[0].message.content ?? demoLetter(application);
+      } catch {
         letterContent = demoLetter(application);
-      } else {
-        const data = await anthropicRes.json() as { content?: Array<{ text?: string }> };
-        letterContent = data.content?.[0]?.text ?? demoLetter(application);
       }
     }
 

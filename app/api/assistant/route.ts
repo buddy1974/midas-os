@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { lots, contacts, campaigns, events, activityLog } from "@/lib/schema";
 import { desc } from "drizzle-orm";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 // Rate limit: max 20 req/min per IP
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -45,8 +46,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Last message must be from user" }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       return NextResponse.json({ error: "offline", demo: true }, { status: 503 });
     }
 
@@ -122,65 +122,35 @@ Subject: [subject line]
 
 Reference real lot/contact data when relevant. Never invent names or addresses not in the data.`;
 
-    const trimmedMessages = messages.slice(-12).map((m) => {
+    const historyMessages = messages.slice(-12).map((m) => {
       const msg = m as { role: string; content: string };
-      return { role: msg.role, content: msg.content };
+      return { role: msg.role as "user" | "assistant", content: msg.content };
     });
 
-    const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 2000,
-        stream: true,
-        system: systemPrompt,
-        messages: trimmedMessages,
-      }),
+    const openai = getOpenAI();
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 2000,
+      stream: true,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...historyMessages,
+      ],
     });
 
-    if (!anthropicRes.ok || !anthropicRes.body) {
-      return NextResponse.json({ error: "Upstream error" }, { status: 502 });
-    }
-
-    const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
-    const writer = writable.getWriter();
     const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-
-    (async () => {
-      const reader = anthropicRes.body!.getReader();
-      let buffer = "";
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-          for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            const data = line.slice(6).trim();
-            if (data === "[DONE]") continue;
-            try {
-              const parsed = JSON.parse(data) as { type: string; delta?: { type: string; text?: string } };
-              if (parsed.type === "content_block_delta" && parsed.delta?.type === "text_delta" && parsed.delta.text) {
-                await writer.write(encoder.encode(`data: ${parsed.delta.text}\n\n`));
-              }
-            } catch {
-              // skip malformed
-            }
+    const readable = new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content ?? "";
+          if (text) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
           }
         }
-        await writer.write(encoder.encode("data: [DONE]\n\n"));
-      } finally {
-        await writer.close();
-      }
-    })();
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      },
+    });
 
     return new Response(readable, {
       headers: {

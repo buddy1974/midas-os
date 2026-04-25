@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 type TemplateType =
   | "auction_alert"
@@ -51,10 +52,6 @@ function getFallback(templateType: string): string[] {
   );
 }
 
-interface AnthropicMessage {
-  content: { type: string; text: string }[];
-}
-
 export async function POST(req: NextRequest) {
   const body = await req.json() as Record<string, unknown>;
   const templateType =
@@ -62,39 +59,30 @@ export async function POST(req: NextRequest) {
   const segment =
     typeof body.segment === "string" ? body.segment : "property investors";
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!hasOpenAI()) {
     return NextResponse.json({ suggestions: getFallback(templateType) });
   }
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 300,
-        system:
-          "You generate email subject lines for Midas Property Auctions, a UK property auction company. Return ONLY a JSON array of exactly 3 subject line strings. No markdown, no explanation, no code blocks. Each subject line should be compelling, specific, and under 60 characters. Use UK English spelling.",
-        messages: [
-          {
-            role: "user",
-            content: `Generate 3 email subject lines for a ${templateType.replace(/_/g, " ")} campaign targeting ${segment} in the UK property auction market.`,
-          },
-        ],
-      }),
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 300,
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You generate email subject lines for Midas Property Auctions, a UK property auction company. Return ONLY a JSON array of exactly 3 subject line strings. No markdown, no explanation, no code blocks. Each subject line should be compelling, specific, and under 60 characters. Use UK English spelling.",
+        },
+        {
+          role: "user",
+          content: `Generate 3 email subject lines for a ${templateType.replace(/_/g, " ")} campaign targeting ${segment} in the UK property auction market.`,
+        },
+      ],
     });
 
-    if (!res.ok) {
-      return NextResponse.json({ suggestions: getFallback(templateType) });
-    }
-
-    const data = await res.json() as AnthropicMessage;
-    const rawText = data.content?.[0]?.text ?? "";
+    const rawText = completion.choices[0].message.content ?? "";
 
     let parsed: unknown;
     try {

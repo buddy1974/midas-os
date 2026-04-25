@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { lots, socialPosts } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 type Platform = "linkedin" | "instagram" | "facebook" | "twitter";
 type Tone = "professional" | "urgent" | "educational" | "community";
@@ -122,8 +123,7 @@ ${lot.notes ? `Notes: ${lot.notes}` : ""}`;
       lotContext = "General post — no specific lot.";
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       const demo = DEMO[platform];
       const [saved] = await db
         .insert(socialPosts)
@@ -146,17 +146,15 @@ ${customNotes ? `Additional context: ${customNotes}` : ""}
 
 Make it compelling for UK property investors.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 600,
-        system: `You are a social media expert for Midas Property Auctions, a UK property auction company run by Sam Fongho, based in London. You write compelling, platform-native social media content.
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 600,
+      temperature: 0.8,
+      messages: [
+        {
+          role: "system",
+          content: `You are a social media expert for Midas Property Auctions, a UK property auction company run by Sam Fongho, based in London. You write compelling, platform-native social media content.
 
 Sam's tone: confident, knowledgeable, community-focused. He empowers investors. He speaks directly. UK English only. No Americanisms.
 
@@ -175,30 +173,12 @@ Return ONLY a JSON object with exactly these keys:
   "cta": string (the call to action line at the end)
 }
 No markdown, no code blocks, no explanation. Return raw JSON only.`,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+        },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    if (!response.ok) {
-      const demo = DEMO[platform];
-      const [saved] = await db
-        .insert(socialPosts)
-        .values({
-          lotId: lotId ?? null,
-          platform,
-          tone,
-          content: demo.post,
-          hashtags: demo.hashtags,
-          status: "draft",
-        })
-        .returning();
-      return NextResponse.json({ ...demo, id: saved.id });
-    }
-
-    const data = await response.json() as {
-      content?: Array<{ type: string; text: string }>;
-    };
-    const text = data.content?.[0]?.text ?? "";
+    const text = completion.choices[0].message.content ?? "";
 
     let parsed: GenerateResult;
     try {

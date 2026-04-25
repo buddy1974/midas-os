@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { loanApplications } from "@/lib/schema";
 import { eq, sql } from "drizzle-orm";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 interface AiScoreResponse {
   score: number;
@@ -64,11 +65,10 @@ export async function POST(
     }
 
     const ltvNum = Number(application.ltv ?? 0);
-    const apiKey = process.env.ANTHROPIC_API_KEY;
 
     let result: AiScoreResponse;
 
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       result = demoScore(
         ltvNum,
         application.hasCcj ?? false,
@@ -103,17 +103,16 @@ ${rentalLine}
 
 Underwrite this application for a UK private lender. Max LTV 75% first charge, 65% second charge.`;
 
-      const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-opus-4-5",
+      try {
+        const openai = getOpenAI();
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o",
           max_tokens: 500,
-          system: `You are a UK private bridging lender underwriter. Score loan applications for Midas Property Auctions.
+          temperature: 0.7,
+          messages: [
+            {
+              role: "system",
+              content: `You are a UK private bridging lender underwriter. Score loan applications for Midas Property Auctions.
 
 Return ONLY JSON:
 {
@@ -124,21 +123,20 @@ Return ONLY JSON:
   "concerns": string[] (max 3 items, key risks to flag),
   "positives": string[] (max 3 items, strengths of this application)
 }`,
-          messages: [{ role: "user", content: userPrompt }],
-        }),
-      });
+            },
+            { role: "user", content: userPrompt },
+          ],
+        });
 
-      if (!anthropicRes.ok) {
-        result = demoScore(ltvNum, application.hasCcj ?? false, application.hasBankruptcy ?? false, application.missedPayments ?? false);
-      } else {
-        const data = await anthropicRes.json() as { content?: Array<{ text?: string }> };
-        const text = data.content?.[0]?.text ?? "";
+        const text = completion.choices[0].message.content ?? "";
         try {
           const jsonMatch = text.match(/\{[\s\S]*\}/);
           result = JSON.parse(jsonMatch?.[0] ?? "{}") as AiScoreResponse;
         } catch {
           result = demoScore(ltvNum, application.hasCcj ?? false, application.hasBankruptcy ?? false, application.missedPayments ?? false);
         }
+      } catch {
+        result = demoScore(ltvNum, application.hasCcj ?? false, application.hasBankruptcy ?? false, application.missedPayments ?? false);
       }
     }
 

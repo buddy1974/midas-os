@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { portfolios, portfolioProperties } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 interface AIReport {
   summary: string;
@@ -65,8 +66,7 @@ export async function POST(
       )
       .join("\n");
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       return NextResponse.json(DEMO_REPORT);
     }
 
@@ -97,27 +97,18 @@ Return ONLY valid JSON with exactly these keys:
   "refinanceNote": "string (if true, explain why, otherwise empty string)"
 }`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 1000,
+      temperature: 0.7,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    if (!res.ok) {
-      return NextResponse.json(DEMO_REPORT);
-    }
-
-    const data = await res.json() as { content: { type: string; text: string }[] };
-    const text = data.content?.[0]?.text ?? "{}";
+    const text = completion.choices[0].message.content ?? "{}";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     const report = jsonMatch ? (JSON.parse(jsonMatch[0]) as AIReport) : DEMO_REPORT;
 

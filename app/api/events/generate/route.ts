@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOpenAI, hasOpenAI } from "@/lib/openai";
 
 interface GenerateBody {
   title?: string;
@@ -35,8 +36,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json() as GenerateBody;
     const { title, event_type, event_date, location, speakers, price, notes } = body;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!hasOpenAI()) {
       return NextResponse.json(DEMO);
     }
 
@@ -63,17 +63,15 @@ ${notes ? `Notes: ${notes}` : ""}
 Sam Fongho of Midas Property Auctions is hosting.
 Audience: UK property investors and landlords.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 800,
-        system: `You are an event copywriter for Midas Property Auctions. You write compelling event descriptions and promotional copy. UK English. Professional but warm. Sam Fongho hosts these events.
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      max_tokens: 800,
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: `You are an event copywriter for Midas Property Auctions. You write compelling event descriptions and promotional copy. UK English. Professional but warm. Sam Fongho hosts these events.
 
 Return ONLY JSON with these exact keys:
 {
@@ -83,18 +81,12 @@ Return ONLY JSON with these exact keys:
   "agenda": string[] (3-5 agenda items as strings)
 }
 No markdown, no code blocks, no explanation. Return raw JSON only.`,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+        },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    if (!response.ok) {
-      return NextResponse.json(DEMO);
-    }
-
-    const data = await response.json() as {
-      content?: Array<{ type: string; text: string }>;
-    };
-    const text = data.content?.[0]?.text ?? "";
+    const text = completion.choices[0].message.content ?? "";
 
     try {
       const parsed = JSON.parse(text) as GenerateResult;
