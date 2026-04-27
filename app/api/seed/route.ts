@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
-import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings, privateLenders, portfolios, portfolioProperties, chatMessages, loanApplications, loanRepayments } from "@/lib/schema";
-import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing, NewPrivateLender, NewPortfolio, NewPortfolioProperty, NewChatMessage, NewLoanApplication, NewLoanRepayment } from "@/lib/schema";
+import { users, lots, contacts, activityLog, newsletterSubscribers, events, eventRegistrations, viewings, privateLenders, portfolios, portfolioProperties, chatMessages, loanApplications, loanRepayments, siteConfig } from "@/lib/schema";
+import type { NewUser, NewLot, NewContact, NewActivityLog, NewNewsletterSubscriber, NewEvent, NewEventRegistration, NewViewing, NewPrivateLender, NewPortfolio, NewPortfolioProperty, NewChatMessage, NewLoanApplication, NewLoanRepayment, NewSiteConfig } from "@/lib/schema";
 
 export async function POST() {
   if (process.env.NODE_ENV === "production") {
@@ -548,6 +548,19 @@ export async function POST() {
       });
     }
     await db.insert(loanRepayments).values(repayments);
+  }
+
+  // Seed site_config with real credentials
+  const seedConfig: NewSiteConfig[] = [
+    { key: 'analytics.google_id',  value: 'G-QHFW6H6W5H',                                                     label: 'Google Analytics ID (GA4)',  category: 'analytics',    fieldType: 'text', sortOrder: 1 },
+    { key: 'analytics.stream_id',  value: '3863375839',                                                          label: 'GA4 Stream ID',              category: 'analytics',    fieldType: 'text', sortOrder: 2 },
+    { key: 'maps.api_key',         value: 'AIzaSyBF2RbZlwk7LW7nfw_qlHTmSX8QqMJQCYo',                           label: 'Google Maps API Key',        category: 'integrations', fieldType: 'text', sortOrder: 1 },
+    { key: 'recaptcha.site_key',   value: '6Ld9jCQhAAAAAITZHTg2ekb_iQfzQIojM-AO3Bu0',                          label: 'reCAPTCHA Site Key',         category: 'integrations', fieldType: 'text', sortOrder: 2 },
+    { key: 'mri.feed_url',         value: 'https://v4.salesandlettings.online/pls/midas/aspasia_search.html',   label: 'MRI CRM XML Feed URL',       category: 'integrations', fieldType: 'url',  sortOrder: 3 },
+    { key: 'eig.auction_url',      value: '',                                                                    label: 'EIG Auction Platform URL',   category: 'integrations', fieldType: 'url',  sortOrder: 4 },
+  ];
+  for (const cfg of seedConfig) {
+    await db.insert(siteConfig).values(cfg).onConflictDoNothing();
   }
 
   return NextResponse.json({ success: true, message: "Seeded" });

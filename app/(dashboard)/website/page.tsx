@@ -1645,6 +1645,11 @@ interface SettingsFields {
   offmarket_password: string
   // Analytics
   analytics_google_id: string
+  // Integrations
+  maps_api_key:       string
+  recaptcha_site_key: string
+  mri_feed_url:       string
+  eig_auction_url:    string
   // SEO
   seo_home_title:        string
   seo_home_description:  string
@@ -1677,6 +1682,10 @@ function SettingsTab() {
     social_youtube:   '',
     offmarket_password:   'MIDAS2026',
     analytics_google_id:  '',
+    maps_api_key:         '',
+    recaptcha_site_key:   '',
+    mri_feed_url:         '',
+    eig_auction_url:      '',
     seo_home_title:        '',
     seo_home_description:  '',
     seo_props_title:       '',
@@ -1719,6 +1728,10 @@ function SettingsTab() {
           social_youtube:   c['social.youtube']   ?? prev.social_youtube,
           offmarket_password:   c['offmarket.password']    ?? prev.offmarket_password,
           analytics_google_id:  c['analytics.google_id']  ?? prev.analytics_google_id,
+          maps_api_key:         c['maps.api_key']          ?? prev.maps_api_key,
+          recaptcha_site_key:   c['recaptcha.site_key']    ?? prev.recaptcha_site_key,
+          mri_feed_url:         c['mri.feed_url']          ?? prev.mri_feed_url,
+          eig_auction_url:      c['eig.auction_url']       ?? prev.eig_auction_url,
           seo_home_title:        c['seo.home.title']        ?? prev.seo_home_title,
           seo_home_description:  c['seo.home.description']  ?? prev.seo_home_description,
           seo_props_title:       c['seo.properties.title']       ?? prev.seo_props_title,
@@ -1916,7 +1929,56 @@ function SettingsTab() {
         />
       </Card>
 
-      {/* Section 8: SEO */}
+      {/* Section 8: Integrations */}
+      <Card>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Integrations</h3>
+        <p className="text-[11px]" style={{ color: 'var(--color-text-dim)' }}>
+          API keys are stored in the database and synced to the website. Keys from 2022 — regenerate in Google Cloud Console if needed.
+        </p>
+        <SettingsField
+          label="Google Maps API Key"
+          value={fields.maps_api_key}
+          onChange={set('maps_api_key')}
+          placeholder="AIzaSy..."
+          helper="Used for the embedded map on the Contact page"
+        />
+        <SettingsField
+          label="reCAPTCHA Site Key"
+          value={fields.recaptcha_site_key}
+          onChange={set('recaptcha_site_key')}
+          placeholder="6Ld9..."
+          helper="Protects the Contact and Register forms from spam"
+        />
+        <SettingsField
+          label="MRI CRM Feed URL"
+          value={fields.mri_feed_url}
+          onChange={set('mri_feed_url')}
+          placeholder="https://v4.salesandlettings.online/pls/midas/..."
+          type="url"
+          helper="Your MRI CRM XML property feed — auto-syncs to the Properties page every 5 minutes"
+        />
+        <SettingsField
+          label="EIG Auction Platform URL"
+          value={fields.eig_auction_url}
+          onChange={set('eig_auction_url')}
+          placeholder="https://www.eigroup.co.uk/..."
+          type="url"
+          helper="Link to your EIG bidding page — investors click here to bid on your properties"
+        />
+        <SaveButton
+          onClick={() => void saveSection('integrations', {
+            'maps.api_key':       fields.maps_api_key,
+            'recaptcha.site_key': fields.recaptcha_site_key,
+            'mri.feed_url':       fields.mri_feed_url,
+            'eig.auction_url':    fields.eig_auction_url,
+          })}
+          saving={savingSection === 'integrations'}
+          saved={savedSection === 'integrations'}
+          label="Save Integrations"
+        />
+      </Card>
+
+      {/* Section 9: SEO */}
       <Card>
         <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>SEO — Page Titles & Descriptions</h3>
         <div className="space-y-4">
