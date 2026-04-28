@@ -5,7 +5,7 @@ import { CheckCircle, AlertTriangle } from "lucide-react";
 interface IntegrationStatusProps {
   hasDb: boolean;
   hasAuth: boolean;
-  hasAnthropic: boolean;
+  hasOpenAI: boolean;
   hasResend: boolean;
 }
 
@@ -20,7 +20,7 @@ interface Integration {
 export default function IntegrationStatus({
   hasDb,
   hasAuth,
-  hasAnthropic,
+  hasOpenAI,
   hasResend,
 }: IntegrationStatusProps) {
   const integrations: Integration[] = [
@@ -39,9 +39,9 @@ export default function IntegrationStatus({
       disconnectedNote: "Not configured",
     },
     {
-      label: "AI Oracle (Anthropic)",
-      connected: hasAnthropic,
-      envVar: "ANTHROPIC_API_KEY",
+      label: "AI (OpenAI)",
+      connected: hasOpenAI,
+      envVar: "OPENAI_API_KEY",
       connectedNote: "Active",
       disconnectedNote: "Demo mode",
     },

@@ -5,15 +5,15 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const TEAM = [
-  { name: "Sam Fongho",    role: "Admin",  email: "sam@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
-  { name: "Powell",        role: "Member", email: "powell@midaspropertyauctions.co.uk",  password: "MidasOS2026!" },
-  { name: "Tah Fongyen",   role: "Member", email: "tah@midaspropertyauctions.co.uk",     password: "MidasOS2026!" },
-  { name: "Collins",       role: "Member", email: "collins@midaspropertyauctions.co.uk", password: "MidasOS2026!" },
-  { name: "Sara Williams", role: "Member", email: "sara@midaspropertyauctions.co.uk",    password: "MidasOS2026!" },
-  { name: "Aarti Sawhney", role: "Member", email: "aarti@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
-  { name: "Chris Ola",     role: "Member", email: "chris@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
-  { name: "Queen Igwe",    role: "Member", email: "queen@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
-  { name: "Munya Forbang", role: "Member", email: "munya@midaspropertyauctions.co.uk",   password: "MidasOS2026!" },
+  { name: "Sam Fongho",    initials: "SF", role: "Admin",  email: "sam@midaspropertygroup.co.uk" },
+  { name: "Sara Williams", initials: "SW", role: "Member", email: "sara@midaspropertyauctions.co.uk" },
+  { name: "Aarti Sawhney", initials: "AS", role: "Member", email: "aarti@midaspropertyauctions.co.uk" },
+  { name: "Chris Ola",     initials: "CO", role: "Member", email: "chris@midaspropertyauctions.co.uk" },
+  { name: "Queen Igwe",    initials: "QI", role: "Member", email: "queen@midaspropertyauctions.co.uk" },
+  { name: "Munya Forbang", initials: "MF", role: "Member", email: "munya@midaspropertyauctions.co.uk" },
+  { name: "Tah Fongyen",   initials: "TF", role: "Member", email: "tah@midaspropertyauctions.co.uk" },
+  { name: "Collins",       initials: "CL", role: "Member", email: "collins@midaspropertyauctions.co.uk" },
+  { name: "Powell",        initials: "PW", role: "Member", email: "powell@midaspropertyauctions.co.uk" },
 ];
 
 export default function LoginPage() {
@@ -54,7 +54,7 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center"
       style={{ backgroundColor: "#080809" }}
     >
-      <div className="w-full max-w-sm px-6">
+      <div className="w-full max-w-md px-6">
         {/* Branding */}
         <div className="text-center mb-10">
           <h1
@@ -155,40 +155,38 @@ export default function LoginPage() {
               <span className="text-xs tracking-widest uppercase whitespace-nowrap">Quick access</span>
               <span className="flex-1 h-px" style={{ backgroundColor: "rgba(201,168,76,0.12)" }} />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {TEAM.map((member) => (
                 <button
                   key={member.email}
                   type="button"
                   onClick={() => {
                     setEmail(member.email);
-                    setPassword(member.password);
+                    setPassword("MidasOS2026!");
                     submitRef.current?.focus();
                   }}
-                  className="flex items-center justify-between w-full px-4 py-2 rounded-full text-sm transition-colors"
+                  className="group flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors"
                   style={{
                     backgroundColor: "#15151C",
                     border: "1px solid rgba(201,168,76,0.25)",
                     color: "#E8E4DC",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C9A84C";
-                    (e.currentTarget as HTMLButtonElement).style.color = "#080809";
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = "#C9A84C";
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(201,168,76,0.12)";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,76,0.6)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#15151C";
-                    (e.currentTarget as HTMLButtonElement).style.color = "#E8E4DC";
                     (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,76,0.25)";
                   }}
                 >
-                  <span className="font-medium">{member.name}</span>
                   <span
-                    className="text-xs font-semibold tracking-widest uppercase"
-                    style={{ color: "inherit", opacity: 0.65 }}
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0"
+                    style={{ backgroundColor: "rgba(201,168,76,0.2)", color: "#C9A84C" }}
                   >
-                    {member.role}
+                    {member.initials}
                   </span>
+                  <span className="text-xs font-medium truncate leading-tight">{member.name}</span>
                 </button>
               ))}
             </div>

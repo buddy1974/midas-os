@@ -13,15 +13,15 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 const TEAM_MEMBERS = [
-  {
-    name: "Sam Fongho",
-    email: "sam@midaspropertyauctions.co.uk",
-    role: "Admin",
-    status: "Active",
-    statusColor: "#22c55e",
-  },
-  { name: "[Member 2]", email: "—", role: "Member", status: "Pending", statusColor: "#f59e0b" },
-  { name: "[Member 3]", email: "—", role: "Member", status: "Pending", statusColor: "#f59e0b" },
+  { name: "Sam Fongho",    email: "sam@midaspropertygroup.co.uk",          role: "Admin",  status: "Active", statusColor: "#22c55e" },
+  { name: "Sara Williams", email: "sara@midaspropertyauctions.co.uk",      role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Aarti Sawhney", email: "aarti@midaspropertyauctions.co.uk",     role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Chris Ola",     email: "chris@midaspropertyauctions.co.uk",     role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Queen Igwe",    email: "queen@midaspropertyauctions.co.uk",     role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Munya Forbang", email: "munya@midaspropertyauctions.co.uk",     role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Tah Fongyen",   email: "tah@midaspropertyauctions.co.uk",       role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Collins",       email: "collins@midaspropertyauctions.co.uk",   role: "Member", status: "Active", statusColor: "#22c55e" },
+  { name: "Powell",        email: "powell@midaspropertyauctions.co.uk",    role: "Member", status: "Active", statusColor: "#22c55e" },
 ];
 
 const SYSTEM_INFO = [
@@ -36,7 +36,7 @@ export default function SettingsPage() {
   // Read env vars server-side — never exposed to client
   const hasDb = !!process.env.DATABASE_URL;
   const hasAuth = !!process.env.NEXTAUTH_SECRET;
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+  const hasOpenAI = !!process.env.OPENAI_API_KEY;
   const hasResend = !!process.env.RESEND_API_KEY;
 
   return (
@@ -99,7 +99,7 @@ export default function SettingsPage() {
         <IntegrationStatus
           hasDb={hasDb}
           hasAuth={hasAuth}
-          hasAnthropic={hasAnthropic}
+          hasOpenAI={hasOpenAI}
           hasResend={hasResend}
         />
       </div>

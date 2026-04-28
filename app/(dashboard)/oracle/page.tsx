@@ -437,7 +437,7 @@ export default function OraclePage() {
                 }}
               >
                 <AlertTriangle size={12} />
-                Oracle running in demo mode — set ANTHROPIC_API_KEY to enable live analysis
+                Oracle running in demo mode — set OPENAI_API_KEY to enable live analysis
               </div>
             )}
 

@@ -38,7 +38,7 @@ const EXAMPLE_PROMPTS = [
 ];
 
 const DEMO_RESPONSE =
-  "I'm ARIA, running in demo mode. Add your ANTHROPIC_API_KEY to .env.local to enable live intelligence. I can see your pipeline is active with lots across London and Essex, and your CRM has contacts ready to engage. Once your API key is set, I can summarise deals, draft emails, analyse properties, and give you real-time market intelligence.";
+  "I'm ARIA, running in demo mode. Add your OPENAI_API_KEY to .env.local to enable live intelligence. I can see your pipeline is active with lots across London and Essex, and your CRM has contacts ready to engage. Once your API key is set, I can summarise deals, draft emails, analyse properties, and give you real-time market intelligence.";
 
 let msgCounter = 0;
 function newId() {
