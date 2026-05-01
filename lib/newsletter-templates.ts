@@ -365,7 +365,7 @@ export function renderTemplate(name: TemplateName, data: TemplateData): string {
     : '<p style="color:#C9A84C;font-size:20px;font-weight:900;letter-spacing:0.15em;margin:0;">◆ MPG</p>'
 
   const unsubscribe =
-    data.unsubscribeUrl ?? 'https://midas-property-sam.vercel.app/api/newsletter/unsubscribe'
+    data.unsubscribeUrl ?? 'https://os.midaspropertyauctions.co.uk/api/newsletter/unsubscribe'
 
   const withLayout = (content: string): string => `
 <!DOCTYPE html>

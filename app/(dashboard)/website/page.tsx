@@ -92,7 +92,7 @@ const WEBSITE_LINKS: [string, string][] = [
   ['Contact', '/contact'],
   ['Register', '/register'],
   ['Compare', '/compare'],
-  ['Loan Application', 'https://midas-property-sam.vercel.app/loans/apply'],
+  ['Loan Application', 'https://os.midaspropertyauctions.co.uk/loans/apply'],
 ]
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────
@@ -1898,12 +1898,12 @@ function SettingsTab() {
         <div className="flex items-center gap-2">
           <input
             readOnly
-            value="https://midas-property-sam.vercel.app/loans/apply"
+            value="https://os.midaspropertyauctions.co.uk/loans/apply"
             className="flex-1 px-3 py-2 rounded-md text-xs outline-none"
             style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', color: 'var(--color-text-dim)' }}
           />
           <button
-            onClick={() => void navigator.clipboard.writeText('https://midas-property-sam.vercel.app/loans/apply')}
+            onClick={() => void navigator.clipboard.writeText('https://os.midaspropertyauctions.co.uk/loans/apply')}
             className="px-3 py-2 rounded-md text-xs font-semibold"
             style={{ backgroundColor: 'rgba(201,168,76,0.15)', color: '#C9A84C' }}
           >

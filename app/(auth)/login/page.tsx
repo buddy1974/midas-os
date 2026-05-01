@@ -1,24 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-const TEAM = [
-  { name: "Sam Fongho",    initials: "SF", role: "Admin",  email: "sam@midaspropertygroup.co.uk" },
-  { name: "Sara Williams", initials: "SW", role: "Member", email: "sara@midaspropertyauctions.co.uk" },
-  { name: "Aarti Sawhney", initials: "AS", role: "Member", email: "aarti@midaspropertyauctions.co.uk" },
-  { name: "Chris Ola",     initials: "CO", role: "Member", email: "chris@midaspropertyauctions.co.uk" },
-  { name: "Queen Igwe",    initials: "QI", role: "Member", email: "queen@midaspropertyauctions.co.uk" },
-  { name: "Munya Forbang", initials: "MF", role: "Member", email: "munya@midaspropertyauctions.co.uk" },
-  { name: "Tah Fongyen",   initials: "TF", role: "Member", email: "tah@midaspropertyauctions.co.uk" },
-  { name: "Collins",       initials: "CL", role: "Member", email: "collins@midaspropertyauctions.co.uk" },
-  { name: "Powell",        initials: "PW", role: "Member", email: "powell@midaspropertyauctions.co.uk" },
-];
-
 export default function LoginPage() {
   const router = useRouter();
-  const submitRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -132,7 +119,6 @@ export default function LoginPage() {
             )}
 
             <button
-              ref={submitRef}
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded text-sm font-semibold tracking-widest uppercase transition-opacity disabled:opacity-50"
@@ -144,53 +130,6 @@ export default function LoginPage() {
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
-
-          {/* Quick login */}
-          <div className="mt-6">
-            <div
-              className="flex items-center gap-3 mb-4"
-              style={{ color: "rgba(232,228,220,0.25)" }}
-            >
-              <span className="flex-1 h-px" style={{ backgroundColor: "rgba(201,168,76,0.12)" }} />
-              <span className="text-xs tracking-widest uppercase whitespace-nowrap">Quick access</span>
-              <span className="flex-1 h-px" style={{ backgroundColor: "rgba(201,168,76,0.12)" }} />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {TEAM.map((member) => (
-                <button
-                  key={member.email}
-                  type="button"
-                  onClick={() => {
-                    setEmail(member.email);
-                    setPassword("MidasOS2026!");
-                    submitRef.current?.focus();
-                  }}
-                  className="group flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors"
-                  style={{
-                    backgroundColor: "#15151C",
-                    border: "1px solid rgba(201,168,76,0.25)",
-                    color: "#E8E4DC",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(201,168,76,0.12)";
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,76,0.6)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#15151C";
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,76,0.25)";
-                  }}
-                >
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0"
-                    style={{ backgroundColor: "rgba(201,168,76,0.2)", color: "#C9A84C" }}
-                  >
-                    {member.initials}
-                  </span>
-                  <span className="text-xs font-medium truncate leading-tight">{member.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
           <p
             className="mt-6 text-center text-xs"

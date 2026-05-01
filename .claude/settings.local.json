@@ -35,7 +35,8 @@
       "Bash(echo \"BUILD exit: $?\")",
       "Bash(echo \"GEN exit: $?\")",
       "Bash(echo \"PUSH exit: $?\")",
-      "Bash(echo \"ENV exit: $?\")"
+      "Bash(echo \"ENV exit: $?\")",
+      "Bash(git *)"
     ]
   }
 }

@@ -29,7 +29,7 @@ function buildConfirmationHtml(params: {
 <body style="margin:0;padding:0;background:#0d0d0d;font-family:Georgia,serif;">
 <div style="max-width:580px;margin:0 auto;background:#0a0a0a;">
   <div style="background:#000;padding:24px 36px;text-align:center;border-bottom:2px solid ${gold};">
-    <img src="https://midas-property-sam.vercel.app/logo.png" alt="Midas Property Auctions" style="height:50px;width:auto;display:inline-block;" />
+    <img src="https://os.midaspropertyauctions.co.uk/logo.png" alt="Midas Property Auctions" style="height:50px;width:auto;display:inline-block;" />
   </div>
   <div style="padding:32px 36px;">
     <p style="color:#22c55e;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">✓ Viewing Confirmed</p>
