@@ -27,6 +27,7 @@ import {
   X,
   Globe,
   Banknote,
+  UserCog,
 } from "lucide-react";
 
 interface NavItem {
@@ -36,6 +37,8 @@ interface NavItem {
   badge?: string;
   badgeCount?: number;
   badgeColor?: 'gold' | 'green';
+  /** Minimum role required: 'manager' = admin|manager only, 'admin' = admin only */
+  minRole?: 'manager' | 'admin';
 }
 
 interface NavSection {
@@ -57,10 +60,10 @@ const navSections: NavSection[] = [
       { label: "AI Oracle", href: "/oracle", icon: Zap, badge: "AI" },
       { label: "Pipeline", href: "/pipeline", icon: Hammer },
       { label: "Viewings", href: "/viewings", icon: Eye },
-      { label: "Finance", href: "/finance", icon: Calculator },
+      { label: "Finance", href: "/finance", icon: Calculator, minRole: "manager" as const },
       { label: "CRM", href: "/crm", icon: Users },
-      { label: "Lender Portal", href: "/lenders", icon: Landmark },
-      { label: "Loan Pipeline", href: "/loans", icon: Banknote, badge: "NEW" },
+      { label: "Lender Portal", href: "/lenders", icon: Landmark, minRole: "manager" as const },
+      { label: "Loan Pipeline", href: "/loans", icon: Banknote, badge: "NEW", minRole: "manager" as const },
       { label: "Portfolio", href: "/portfolio", icon: PieChart },
       { label: "Campaigns", href: "/campaigns", icon: Mail, badge: "AI" },
       { label: "Market Pulse", href: "/market", icon: TrendingUp },
@@ -85,13 +88,14 @@ const navSections: NavSection[] = [
   {
     title: "Website",
     items: [
-      { label: "Website", href: "/website", icon: Globe, badge: "LIVE", badgeColor: "green" as const },
+      { label: "Website", href: "/website", icon: Globe, badge: "LIVE", badgeColor: "green" as const, minRole: "manager" as const },
     ],
   },
   {
     title: "System",
     items: [
-      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Team & Access", href: "/users", icon: UserCog, minRole: "admin" as const },
+      { label: "Settings", href: "/settings", icon: Settings, minRole: "manager" as const },
     ],
   },
 ];
@@ -135,6 +139,13 @@ interface SidebarProps {
   drawerOpen: boolean;
   onMenuOpen: () => void;
   onDrawerClose: () => void;
+}
+
+function canSeeItem(item: NavItem, role: string): boolean {
+  if (!item.minRole) return true;
+  if (item.minRole === 'admin') return role === 'admin';
+  if (item.minRole === 'manager') return role === 'admin' || role === 'manager';
+  return true;
 }
 
 export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }: SidebarProps) {
@@ -224,21 +235,25 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
-          {navSections.map((section) => (
-            <div key={section.title}>
-              <p
-                className="px-3 mb-1 text-xs font-semibold tracking-widest uppercase"
-                style={{ color: "var(--color-text-dim)", fontSize: "10px" }}
-              >
-                {section.title}
-              </p>
-              <div className="space-y-0.5">
-                {section.items.map((item) => (
-                  <NavLink key={item.href} item={item} />
-                ))}
+          {navSections.map((section) => {
+            const visibleItems = section.items.filter(item => canSeeItem(item, user.role));
+            if (visibleItems.length === 0) return null;
+            return (
+              <div key={section.title}>
+                <p
+                  className="px-3 mb-1 text-xs font-semibold tracking-widest uppercase"
+                  style={{ color: "var(--color-text-dim)", fontSize: "10px" }}
+                >
+                  {section.title}
+                </p>
+                <div className="space-y-0.5">
+                  {visibleItems.map((item) => (
+                    <NavLink key={item.href} item={item} />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </nav>
 
         {/* User footer */}
@@ -359,21 +374,25 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
 
             {/* Nav sections */}
             <nav className="flex-1 px-3 py-4 space-y-5">
-              {navSections.map((section) => (
-                <div key={section.title}>
-                  <p
-                    className="px-3 mb-1 font-semibold tracking-widest uppercase"
-                    style={{ color: "var(--color-text-dim)", fontSize: "10px" }}
-                  >
-                    {section.title}
-                  </p>
-                  <div className="space-y-0.5">
-                    {section.items.map((item) => (
-                      <NavLink key={item.href} item={item} onClick={onDrawerClose} />
-                    ))}
+              {navSections.map((section) => {
+                const visibleItems = section.items.filter(item => canSeeItem(item, user.role));
+                if (visibleItems.length === 0) return null;
+                return (
+                  <div key={section.title}>
+                    <p
+                      className="px-3 mb-1 font-semibold tracking-widest uppercase"
+                      style={{ color: "var(--color-text-dim)", fontSize: "10px" }}
+                    >
+                      {section.title}
+                    </p>
+                    <div className="space-y-0.5">
+                      {visibleItems.map((item) => (
+                        <NavLink key={item.href} item={item} onClick={onDrawerClose} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </nav>
 
             {/* User footer in drawer */}
