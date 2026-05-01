@@ -273,6 +273,17 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
             <LogOut size={13} />
             Sign out
           </button>
+          <div className="mt-3 text-center">
+            <a
+              href="https://maxpromo.digital"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] transition-colors hover:text-[#C9A84C]"
+              style={{ color: "rgba(232,228,220,0.2)" }}
+            >
+              Developed by maxpromo.digital
+            </a>
+          </div>
         </div>
       </aside>
 
@@ -397,6 +408,17 @@ export default function Sidebar({ user, drawerOpen, onMenuOpen, onDrawerClose }:
                 <LogOut size={13} />
                 Sign out
               </button>
+              <div className="mt-3 text-center">
+                <a
+                  href="https://maxpromo.digital"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] transition-colors hover:text-[#C9A84C]"
+                  style={{ color: "rgba(232,228,220,0.2)" }}
+                >
+                  Developed by maxpromo.digital
+                </a>
+              </div>
             </div>
           </div>
         </>
