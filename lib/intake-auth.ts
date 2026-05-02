@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function requireIntakeKey(req: NextRequest): NextResponse | null {
-  const secret = process.env.WEBSITE_API_KEY
+  const secret = process.env.WEBSITE_API_KEY?.trim()
   if (!secret) {
     // If key isn't configured, block all intake requests in production
     if (process.env.NODE_ENV === 'production') {
@@ -24,7 +24,7 @@ export function requireIntakeKey(req: NextRequest): NextResponse | null {
     return null
   }
 
-  const provided = req.headers.get('x-api-key')
+  const provided = req.headers.get('x-api-key')?.trim()
   if (!provided || provided !== secret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
