@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { newsletterSubscribers } from "@/lib/schema";
+import { requireIntakeKey } from "@/lib/intake-auth";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 export async function POST(req: NextRequest) {
+  const authError = requireIntakeKey(req);
+  if (authError) return authError;
+
   try {
     const body = await req.json() as Record<string, unknown>;
 

@@ -314,7 +314,7 @@ function AuctionTab() {
   async function saveCard(cardId: string, payload: Record<string, string>) {
     setSavingCard(cardId)
     try {
-      const res = await fetch('/api/public/config', {
+      const res = await fetch('/api/cms/site-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -722,7 +722,7 @@ function ContentTab() {
   async function handleSave() {
     setSaving(true)
     try {
-      const res = await fetch('/api/public/config', {
+      const res = await fetch('/api/cms/site-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadForSubTab[activeSubTab]),
@@ -1750,7 +1750,7 @@ function SettingsTab() {
   async function saveSection(sectionId: string, payload: Record<string, string>) {
     setSavingSection(sectionId)
     try {
-      const res = await fetch('/api/public/config', {
+      const res = await fetch('/api/cms/site-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

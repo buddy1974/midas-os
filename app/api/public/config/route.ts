@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { siteConfig, teamMembers, cmsTestimonials, blogPosts } from '@/lib/schema'
 import { eq, asc } from 'drizzle-orm'
@@ -8,8 +8,24 @@ export const dynamic = 'force-dynamic'
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, x-cms-token',
   'Cache-Control': 'public, s-maxage=30',
+}
+
+function requireCmsToken(req: NextRequest): NextResponse | null {
+  const secret = process.env.CMS_WRITE_TOKEN
+  if (!secret) {
+    // Block writes in production if token is not configured
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'CMS writes are not configured' }, { status: 503 })
+    }
+    return null
+  }
+  const provided = req.headers.get('x-cms-token')
+  if (!provided || provided !== secret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  return null
 }
 
 export async function OPTIONS() {
@@ -42,7 +58,10 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const authError = requireCmsToken(req)
+  if (authError) return authError
+
   try {
     const db = getDb()
     const body = await req.json() as Record<string, string>
