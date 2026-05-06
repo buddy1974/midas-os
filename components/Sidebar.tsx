@@ -28,6 +28,9 @@ import {
   Globe,
   Banknote,
   UserCog,
+  Wand2,
+  ImageIcon,
+  LayoutGrid,
 } from "lucide-react";
 
 interface NavItem {
@@ -89,6 +92,9 @@ const navSections: NavSection[] = [
     title: "Website",
     items: [
       { label: "Website", href: "/website", icon: Globe, badge: "LIVE", badgeColor: "green" as const, minRole: "manager" as const },
+      { label: "AI Content", href: "/website/ai-content", icon: Wand2, badge: "AI", minRole: "manager" as const },
+      { label: "Media Library", href: "/website/media", icon: ImageIcon },
+      { label: "Pages & Nav", href: "/website/pages", icon: LayoutGrid, minRole: "manager" as const },
     ],
   },
   {
