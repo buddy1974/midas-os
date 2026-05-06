@@ -70,6 +70,12 @@ export async function PATCH(
     if (typeof body.email_sent === "boolean") updateData.emailSent = body.email_sent;
     if (typeof body.showOnWebsite === "boolean") updateData.showOnWebsite = body.showOnWebsite;
     if (typeof body.cover_image === "string") updateData.coverImage = body.cover_image || null;
+    if (typeof body.registration_type === "string") updateData.registrationType = body.registration_type;
+    if (typeof body.form_fields === "string") updateData.formFields = body.form_fields;
+    if (typeof body.show_investor_option === "boolean") updateData.showInvestorOption = body.show_investor_option;
+    if (typeof body.custom_button_label === "string") updateData.customButtonLabel = body.custom_button_label || null;
+    if (typeof body.custom_button_url === "string") updateData.customButtonUrl = body.custom_button_url || null;
+    if (typeof body.recap_url === "string") updateData.recapUrl = body.recap_url || null;
 
     const [updated] = await db
       .update(events)

@@ -87,6 +87,12 @@ export async function POST(req: NextRequest) {
         ticketLink: typeof body.ticket_link === "string" ? body.ticket_link || null : null,
         lotId: typeof body.lot_id === "string" ? body.lot_id || null : null,
         coverImage: typeof body.cover_image === "string" ? body.cover_image || null : null,
+        registrationType: typeof body.registration_type === "string" ? body.registration_type : "form",
+        formFields: typeof body.form_fields === "string" ? body.form_fields : "full",
+        showInvestorOption: typeof body.show_investor_option === "boolean" ? body.show_investor_option : false,
+        customButtonLabel: typeof body.custom_button_label === "string" ? body.custom_button_label || null : null,
+        customButtonUrl: typeof body.custom_button_url === "string" ? body.custom_button_url || null : null,
+        recapUrl: typeof body.recap_url === "string" ? body.recap_url || null : null,
       })
       .returning();
 

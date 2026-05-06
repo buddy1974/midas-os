@@ -4,9 +4,11 @@ import { getDb } from '@/lib/db'
 import { users } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 
-// Bootstrap Sam's admin account — safe to run in production.
-// Protected by INIT_SECRET env var when set.
 export async function POST(req: Request) {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not available' }, { status: 404 })
+  }
+
   const secret = process.env.INIT_SECRET
   if (secret) {
     const { secret: provided } = await req.json().catch(() => ({})) as { secret?: string }

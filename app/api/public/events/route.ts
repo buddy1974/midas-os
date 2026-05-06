@@ -26,6 +26,13 @@ export async function GET() {
         description: events.description,
         maxCapacity: events.maxCapacity,
         pricePence: events.pricePence,
+        ticketLink: events.ticketLink,
+        registrationType: events.registrationType,
+        formFields: events.formFields,
+        showInvestorOption: events.showInvestorOption,
+        customButtonLabel: events.customButtonLabel,
+        customButtonUrl: events.customButtonUrl,
+        recapUrl: events.recapUrl,
         coverImage: events.coverImage,
       })
       .from(events)

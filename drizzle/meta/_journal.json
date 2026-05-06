@@ -85,6 +85,20 @@
       "when": 1777135111087,
       "tag": "0011_silent_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1778062415818,
+      "tag": "0012_wide_peter_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1778063935503,
+      "tag": "0013_small_living_mummy",
+      "breakpoints": true
     }
   ]
 }

@@ -20,6 +20,12 @@ interface EventWithCount {
   pricePence: number | null;
   ticketLink: string | null;
   lotId: string | null;
+  registrationType: string;
+  formFields: string;
+  showInvestorOption: boolean;
+  customButtonLabel: string | null;
+  customButtonUrl: string | null;
+  recapUrl: string | null;
   socialPostGenerated: boolean;
   emailSent: boolean;
   createdAt: string;
@@ -53,6 +59,12 @@ interface EventForm {
   description: string;
   notes: string;
   agendaItems: string[];
+  registrationType: string;
+  formFields: string;
+  showInvestorOption: boolean;
+  customButtonLabel: string;
+  customButtonUrl: string;
+  recapUrl: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -94,6 +106,12 @@ const EMPTY_FORM: EventForm = {
   description: "",
   notes: "",
   agendaItems: ["", "", ""],
+  registrationType: "form",
+  formFields: "full",
+  showInvestorOption: false,
+  customButtonLabel: "",
+  customButtonUrl: "",
+  recapUrl: "",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -256,6 +274,12 @@ export default function CalendarPage() {
       description: ev.description ?? "",
       notes: "",
       agendaItems: ["", "", ""],
+      registrationType: ev.registrationType ?? "form",
+      formFields: ev.formFields ?? "full",
+      showInvestorOption: ev.showInvestorOption ?? false,
+      customButtonLabel: ev.customButtonLabel ?? "",
+      customButtonUrl: ev.customButtonUrl ?? "",
+      recapUrl: ev.recapUrl ?? "",
     });
     setAiSuggestion(null);
     setShowModal(true);
@@ -327,6 +351,12 @@ export default function CalendarPage() {
         ticket_link: form.ticketLink || undefined,
         lot_id: form.lotId || undefined,
         description: form.description || undefined,
+        registration_type: form.registrationType,
+        form_fields: form.formFields,
+        show_investor_option: form.showInvestorOption,
+        custom_button_label: form.customButtonLabel || undefined,
+        custom_button_url: form.customButtonUrl || undefined,
+        recap_url: form.recapUrl || undefined,
       };
 
       if (editingEvent) {
@@ -878,6 +908,63 @@ export default function CalendarPage() {
               <Field label="Description">
                 <textarea value={form.description} onChange={(e) => setField("description", e.target.value)} rows={5} placeholder="Compelling event description…" className="w-full rounded px-3 py-2 text-sm resize-none" style={inputStyle} />
               </Field>
+
+              {/* ── Registration Settings ── */}
+              <div className="rounded p-4 space-y-4" style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}>
+                <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "var(--color-gold)" }}>Registration Settings</p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Registration Type">
+                    <select value={form.registrationType} onChange={(e) => setField("registrationType", e.target.value)} className="w-full rounded px-3 py-2 text-sm" style={inputStyle}>
+                      <option value="form">Inline Form (on website)</option>
+                      <option value="external">External Link</option>
+                      <option value="phone">Phone to Register</option>
+                      <option value="none">No Registration</option>
+                    </select>
+                  </Field>
+
+                  {form.registrationType === "form" && (
+                    <Field label="Form Fields">
+                      <select value={form.formFields} onChange={(e) => setField("formFields", e.target.value)} className="w-full rounded px-3 py-2 text-sm" style={inputStyle}>
+                        <option value="full">Full (Name + Email + Phone)</option>
+                        <option value="name_email">Name + Email only</option>
+                        <option value="name_phone">Name + Phone only</option>
+                        <option value="name_only">Name only</option>
+                      </select>
+                    </Field>
+                  )}
+                </div>
+
+                {form.registrationType === "form" && (
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={form.showInvestorOption}
+                      onChange={(e) => setForm(prev => ({ ...prev, showInvestorOption: e.target.checked }))}
+                      style={{ accentColor: "#C9A84C" }}
+                    />
+                    <span className="text-xs" style={{ color: "var(--color-text-dim)" }}>
+                      Show &apos;Register as Midas investor&apos; checkbox on form
+                    </span>
+                  </label>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Custom Button Label">
+                    <input value={form.customButtonLabel} onChange={(e) => setField("customButtonLabel", e.target.value)} placeholder="e.g. Book Your Spot" className="w-full rounded px-3 py-2 text-sm" style={inputStyle} />
+                  </Field>
+                  <Field label="Custom Button URL">
+                    <input type="url" value={form.customButtonUrl} onChange={(e) => setField("customButtonUrl", e.target.value)} placeholder="https://eventbrite.com/..." className="w-full rounded px-3 py-2 text-sm" style={inputStyle} />
+                  </Field>
+                </div>
+                <p className="text-xs" style={{ color: "#555" }}>
+                  Custom button overrides the default register action. Use for Eventbrite, Zoom, external booking.
+                </p>
+
+                <Field label="Recap URL (add after event)">
+                  <input type="url" value={form.recapUrl} onChange={(e) => setField("recapUrl", e.target.value)} placeholder="https://... (recording or summary)" className="w-full rounded px-3 py-2 text-sm" style={inputStyle} />
+                </Field>
+              </div>
 
               {/* Agenda */}
               <div>
